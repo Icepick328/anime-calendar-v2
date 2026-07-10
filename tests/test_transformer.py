@@ -1,6 +1,12 @@
 from datetime import UTC, date, datetime
 
-from anime_calendar.models import ReleaseType
+from anime_calendar.models import (
+    ReleaseConfidence,
+    ReleaseDateStatus,
+    ReleaseEvidenceType,
+    ReleasePrecision,
+    ReleaseType,
+)
 from anime_calendar.services.transformer import (
     merge_releases,
     transform_airing_schedule,
@@ -49,6 +55,10 @@ def test_transform_airing_schedule_enriches_metadata_and_deduplicates() -> None:
     assert release.anime.synopsis == "A great anime. Second line."
     assert release.anime.studios == ("Example Studio",)
     assert release.anime.streaming_providers[0].provider_id == "crunchyroll"
+    assert release.date_status is ReleaseDateStatus.CONFIRMED
+    assert release.confidence is ReleaseConfidence.HIGH
+    assert release.precision is ReleasePrecision.EXACT_TIME
+    assert release.evidence[0].evidence_type is ReleaseEvidenceType.ANILIST_AIRING_SCHEDULE
 
 
 def test_transform_media_releases_creates_all_day_movie_and_skips_partial_dates() -> None:
@@ -65,6 +75,9 @@ def test_transform_media_releases_creates_all_day_movie_and_skips_partial_dates(
     assert releases[0].release_type is ReleaseType.MOVIE
     assert releases[0].released_at == date(2026, 8, 14)
     assert releases[0].is_all_day
+    assert releases[0].date_status is ReleaseDateStatus.REPORTED
+    assert releases[0].confidence is ReleaseConfidence.MEDIUM
+    assert releases[0].precision is ReleasePrecision.EXACT_DATE
 
 
 def test_merge_releases_preserves_distinct_release_types() -> None:

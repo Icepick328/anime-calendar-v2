@@ -5,7 +5,13 @@ from pathlib import Path
 
 from icalendar import Calendar, Event
 
-from anime_calendar.models import Release, ReleaseLabel, ReleaseType, StreamingProvider
+from anime_calendar.models import (
+    Release,
+    ReleaseEvidence,
+    ReleaseLabel,
+    ReleaseType,
+    StreamingProvider,
+)
 
 
 def _humanize(value: str | None) -> str | None:
@@ -25,7 +31,8 @@ def _release_name(release: Release) -> str:
 
 
 def _summary(release: Release) -> str:
-    return f"{release.anime.title} — {_release_name(release)}"
+    prefix = "[Estimated] " if release.is_estimated else ""
+    return f"{prefix}{release.anime.title} — {_release_name(release)}"
 
 
 def _provider_lines(provider: StreamingProvider) -> list[str]:
@@ -43,14 +50,36 @@ def _provider_lines(provider: StreamingProvider) -> list[str]:
     return lines
 
 
+def _evidence_lines(evidence: ReleaseEvidence) -> list[str]:
+    lines = [f"- {evidence.source_name}"]
+    if evidence.source_url:
+        lines.append(f"  {evidence.source_url}")
+    if evidence.note:
+        lines.append(f"  {evidence.note}")
+    return lines
+
+
 def _description(release: Release) -> str:
     anime = release.anime
     lines = [
         f"Release type: {_humanize(release.release_type.value)}",
         f"Release: {_release_name(release)}",
+        "",
+        "Release Intelligence",
+        f"Date status: {_humanize(release.date_status.value)}",
+        f"Confidence: {_humanize(release.confidence.value)}",
+        f"Lifecycle: {_humanize(release.effective_lifecycle.value)}",
+        f"Date precision: {_humanize(release.precision.value)}",
+        f"Version: {_humanize(release.variant.value)}",
     ]
     if release.episode_number is not None:
         lines.insert(0, f"Episode: {release.episode_number}")
+    if release.evidence:
+        lines.extend(["", "Evidence"])
+        for evidence in release.evidence:
+            lines.extend(_evidence_lines(evidence))
+
+    lines.append("")
     if anime.romaji_title != anime.title:
         lines.append(f"Romaji title: {anime.romaji_title}")
     if anime.native_title:
@@ -143,6 +172,8 @@ def build_calendar(
             "Anime",
             _humanize(release.release_type.value) or "Release",
             _humanize(release.label.value) or "Release",
+            _humanize(release.date_status.value) or "Unknown",
+            _humanize(release.variant.value) or "Unknown",
         ]
         categories.extend(provider.display_name for provider in release.anime.streaming_providers)
         event.add("categories", categories)

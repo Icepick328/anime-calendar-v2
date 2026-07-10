@@ -57,6 +57,9 @@ jobs:
             streaming_confirmed.ics
             crunchyroll.ics
             hidive.ics
+            confirmed_releases.ics
+            reported_releases.ics
+            estimated_releases.ics
           )
           for file in "${files[@]}"; do
             test -f "output/$file"
@@ -67,6 +70,9 @@ jobs:
           echo "All releases: $(grep -c 'BEGIN:VEVENT' output/all_releases.ics || true)"
           echo "Crunchyroll: $(grep -c 'BEGIN:VEVENT' output/crunchyroll.ics || true)"
           echo "HIDIVE: $(grep -c 'BEGIN:VEVENT' output/hidive.ics || true)"
+          echo "Confirmed dates: $(grep -c 'BEGIN:VEVENT' output/confirmed_releases.ics || true)"
+          echo "Reported dates: $(grep -c 'BEGIN:VEVENT' output/reported_releases.ics || true)"
+          echo "Estimated dates: $(grep -c 'BEGIN:VEVENT' output/estimated_releases.ics || true)"
 
       - name: Upload generated calendars
         uses: actions/upload-artifact@v7

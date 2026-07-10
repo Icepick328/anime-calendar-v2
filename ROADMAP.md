@@ -2,37 +2,47 @@
 
 ## Completed
 
-### 0.3.0 — Universal release generator
-
-- Episodes, movies, OVAs, ONAs, specials, TV shorts, and music anime
-- Multiple public calendar feeds
-- Mixed timed and all-day releases
-
-### 0.4.0 — Streaming intelligence
-
-- Canonical streaming-provider model
-- Crunchyroll-first provider ordering
-- Confidence and evidence metadata
-- Curated knowledge package
-- Confirmed-streaming and provider-specific feeds
+- v0.1.0 — Foundation
+- v0.2.0 — Metadata Engine
+- v0.3.0 — Universal Release Generator
+- v0.4.0 — Streaming Intelligence
+- v0.5.0 — Release Intelligence Foundation
 
 ## Planned
 
-### 0.5.0 — Dub intelligence
+### v0.6.0 — Accounts and Preferences
 
-- Confirmed, predicted, and unknown dub states
-- English dub release records
-- Provider and region awareness
-
-### 0.6.0 — Accounts and preferences
-
-- Authentication and user profiles
+- Authentication backend design
+- User profiles
 - Genre include/exclude filters
-- Saved anime and release-type preferences
-- Personalized calendar profiles
+- Release-type preferences
+- Preferred streaming providers
+- Saved and hidden anime
 
-### 0.7.0 — Dashboard and private feeds
+### v0.7.0 — Personalized Calendar Feeds
 
-- Personalized web dashboard
-- Revocable Apple Calendar subscription tokens
-- Account-managed calendar subscriptions
+- Revocable private feed tokens
+- Multiple calendar profiles
+- Watchlist-only feeds
+- Personalized sub, dub, movie, and genre feeds
+
+### v0.8.0 — Dashboard
+
+- Upcoming releases
+- Search and saved anime
+- Calendar management
+- Release evidence and confidence display
+
+### v0.9.0 — Prediction and Notification Engines
+
+- Transparent dub estimates
+- Movie theatrical-to-streaming lifecycle
+- Delay detection
+- Email, Discord, RSS, and webhook outputs
+
+### v1.0.0 — Public Release
+
+- Stable deployment
+- Account privacy and deletion flows
+- Production documentation
+- Public launch

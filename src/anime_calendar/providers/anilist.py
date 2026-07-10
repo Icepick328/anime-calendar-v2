@@ -105,7 +105,7 @@ def fetch_airing_schedule(settings: Settings) -> list[dict[str, Any]]:
     results: list[dict[str, Any]] = []
 
     with requests.Session() as session:
-        session.headers.update({"User-Agent": "anime-calendar-v2/0.3"})
+        session.headers.update({"User-Agent": "anime-calendar-v2/0.5"})
         for page in range(1, settings.max_pages + 1):
             payload = _post(
                 session,
@@ -137,7 +137,7 @@ def fetch_media_releases(settings: Settings) -> list[dict[str, Any]]:
     results: list[dict[str, Any]] = []
 
     with requests.Session() as session:
-        session.headers.update({"User-Agent": "anime-calendar-v2/0.3"})
+        session.headers.update({"User-Agent": "anime-calendar-v2/0.5"})
         for page in range(1, settings.media_max_pages + 1):
             payload = _post(
                 session,

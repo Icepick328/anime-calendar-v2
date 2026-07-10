@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 from enum import StrEnum
 
 
@@ -21,6 +21,61 @@ class ReleaseLabel(StrEnum):
     PREMIERE = "premiere"
     FINALE = "finale"
     RELEASE = "release"
+
+
+class ReleaseDateStatus(StrEnum):
+    CONFIRMED = "confirmed"
+    REPORTED = "reported"
+    ESTIMATED = "estimated"
+    UNKNOWN = "unknown"
+
+
+class ReleaseConfidence(StrEnum):
+    VERIFIED = "verified"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+    UNKNOWN = "unknown"
+
+    @property
+    def rank(self) -> int:
+        return {
+            ReleaseConfidence.UNKNOWN: 0,
+            ReleaseConfidence.LOW: 1,
+            ReleaseConfidence.MEDIUM: 2,
+            ReleaseConfidence.HIGH: 3,
+            ReleaseConfidence.VERIFIED: 4,
+        }[self]
+
+
+class ReleaseEvidenceType(StrEnum):
+    ANILIST_AIRING_SCHEDULE = "anilist_airing_schedule"
+    ANILIST_MEDIA_START_DATE = "anilist_media_start_date"
+    OFFICIAL_ANNOUNCEMENT = "official_announcement"
+    CURATED_KNOWLEDGE = "curated_knowledge"
+    HISTORICAL_PATTERN = "historical_pattern"
+
+
+class ReleasePrecision(StrEnum):
+    EXACT_TIME = "exact_time"
+    EXACT_DATE = "exact_date"
+    PARTIAL_DATE = "partial_date"
+    UNKNOWN = "unknown"
+
+
+class ReleaseVariant(StrEnum):
+    ORIGINAL = "original"
+    SUB = "sub"
+    DUB = "dub"
+    UNKNOWN = "unknown"
+
+
+class ReleaseLifecycle(StrEnum):
+    SCHEDULED = "scheduled"
+    RELEASED = "released"
+    DELAYED = "delayed"
+    CANCELLED = "cancelled"
+    UNKNOWN = "unknown"
 
 
 class ProviderConfidence(StrEnum):
@@ -45,6 +100,14 @@ class ProviderEvidence(StrEnum):
     OFFICIAL_STREAMING_LINK = "official_streaming_link"
     EXTERNAL_LINK = "external_link"
     CURATED_KNOWLEDGE = "curated_knowledge"
+
+
+@dataclass(frozen=True, slots=True)
+class ReleaseEvidence:
+    evidence_type: ReleaseEvidenceType
+    source_name: str
+    source_url: str | None = None
+    note: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -142,6 +205,12 @@ class Release:
     release_type: ReleaseType
     released_at: datetime | date
     episode_number: int | None = None
+    date_status: ReleaseDateStatus = ReleaseDateStatus.UNKNOWN
+    confidence: ReleaseConfidence = ReleaseConfidence.UNKNOWN
+    precision: ReleasePrecision = ReleasePrecision.UNKNOWN
+    variant: ReleaseVariant = ReleaseVariant.UNKNOWN
+    lifecycle: ReleaseLifecycle = ReleaseLifecycle.SCHEDULED
+    evidence: tuple[ReleaseEvidence, ...] = ()
 
     @property
     def label(self) -> ReleaseLabel:
@@ -166,3 +235,25 @@ class Release:
         if self.release_type is ReleaseType.EPISODE:
             return f"anilist-{self.anime.anilist_id}-ep-{self.episode_number}"
         return f"anilist-{self.anime.anilist_id}-{self.release_type.value}"
+
+    @property
+    def is_estimated(self) -> bool:
+        return self.date_status is ReleaseDateStatus.ESTIMATED
+
+    @property
+    def has_confirmed_date(self) -> bool:
+        return self.date_status is ReleaseDateStatus.CONFIRMED
+
+    @property
+    def effective_lifecycle(self) -> ReleaseLifecycle:
+        if self.lifecycle in {ReleaseLifecycle.DELAYED, ReleaseLifecycle.CANCELLED}:
+            return self.lifecycle
+        now = datetime.now(UTC)
+        if isinstance(self.released_at, datetime):
+            comparison = self.released_at.astimezone(UTC)
+            return ReleaseLifecycle.RELEASED if comparison <= now else ReleaseLifecycle.SCHEDULED
+        return (
+            ReleaseLifecycle.RELEASED
+            if self.released_at < now.date()
+            else ReleaseLifecycle.SCHEDULED
+        )

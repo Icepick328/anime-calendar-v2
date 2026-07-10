@@ -6,7 +6,7 @@ from pathlib import Path
 from anime_calendar.calendars.ics_builder import build_calendar, write_calendar
 from anime_calendar.config import load_settings
 from anime_calendar.logging_config import configure_logging
-from anime_calendar.models import Release, ReleaseType
+from anime_calendar.models import Release, ReleaseDateStatus, ReleaseType
 from anime_calendar.providers.anilist import (
     AniListError,
     fetch_airing_schedule,
@@ -77,6 +77,21 @@ def main() -> int:
         streaming_confirmed = [
             item for item in all_releases if item.anime.streaming_providers
         ]
+        confirmed_dates = [
+            item
+            for item in all_releases
+            if item.date_status is ReleaseDateStatus.CONFIRMED
+        ]
+        reported_dates = [
+            item
+            for item in all_releases
+            if item.date_status is ReleaseDateStatus.REPORTED
+        ]
+        estimated_dates = [
+            item
+            for item in all_releases
+            if item.date_status is ReleaseDateStatus.ESTIMATED
+        ]
         crunchyroll = _provider_releases(all_releases, "crunchyroll")
         hidive = _provider_releases(all_releases, "hidive")
 
@@ -90,6 +105,9 @@ def main() -> int:
             (streaming_confirmed, "Anime with Confirmed Streaming", "streaming_confirmed.ics"),
             (crunchyroll, "Anime on Crunchyroll", "crunchyroll.ics"),
             (hidive, "Anime on HIDIVE", "hidive.ics"),
+            (confirmed_dates, "Confirmed Anime Release Dates", "confirmed_releases.ics"),
+            (reported_dates, "Reported Anime Release Dates", "reported_releases.ics"),
+            (estimated_dates, "Estimated Anime Release Dates", "estimated_releases.ics"),
         )
         for releases, name, filename in feeds:
             path = _write_feed(

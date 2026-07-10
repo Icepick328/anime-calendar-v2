@@ -64,6 +64,8 @@ def test_build_calendar_contains_timed_episode_metadata() -> None:
     assert "Episode 7" in str(event.get("summary"))
     assert "anilist-42-ep-7" in str(event.get("uid"))
     assert "Summer 2026" in str(event.get("description"))
+    assert "Release Intelligence" in str(event.get("description"))
+    assert "Date status: Unknown" in str(event.get("description"))
     assert "Crunchyroll" in str(event.get("description"))
     assert event.get("url") == "https://www.crunchyroll.com/series/example"
     assert isinstance(event.decoded("dtstart"), datetime)

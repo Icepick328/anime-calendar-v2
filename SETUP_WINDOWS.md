@@ -1,42 +1,41 @@
-# Windows setup and v0.4.0 upgrade
+# Windows Setup and v0.5.0 Upgrade
 
-## Upgrade an existing clone
+## Upgrade an existing repository
 
-1. Commit and push your current work.
-2. Extract the v0.4.0 ZIP.
+1. Commit and push the current version.
+2. Extract the v0.5.0 snapshot.
 3. Copy everything inside the extracted folder into the repository root.
-4. Replace files when Windows asks.
+4. Replace destination files when prompted.
 5. Do not delete `.git` or `.venv`.
 
-Then run:
+Activate and refresh the project:
 
 ```powershell
 cd $HOME\Documents\GitHub\anime-calendar-v2
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
 .\.venv\Scripts\Activate.ps1
 python -m pip install -e ".[dev]"
+```
+
+Validate:
+
+```powershell
 python -m ruff check .
 python -m pytest
 python -m anime_calendar
 ```
 
-Expected tests:
+Expected test result:
 
 ```text
-11 passed
+14 passed
 ```
 
-Generated calendars include:
+Commit:
 
-```text
-output\anime_calendar.ics
-output\all_releases.ics
-output\episodes.ics
-output\movies.ics
-output\specials.ics
-output\streaming_confirmed.ics
-output\crunchyroll.ics
-output\hidive.ics
+```powershell
+git status
+git add .
+git commit -m "v0.5.0: add release intelligence foundation"
+git push
 ```
-
-Empty provider feeds are valid and indicate that no matching provider was confirmed during the current look-ahead window.

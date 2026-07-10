@@ -75,3 +75,15 @@ Provider feeds may be empty while remaining valid iCalendar documents.
 ## Account readiness
 
 Future account filters operate on canonical release type, genres, providers, language, date, and AniList ID. Calendar generation accepts filtered `Release` objects, so authentication and personalized feeds can be added without rewriting ingestion or calendar formatting.
+
+## Release Intelligence (v0.5.0)
+
+The canonical `Release` object now carries date status, release confidence, date precision, release variant, lifecycle, and structured evidence. Data ingestion assigns these values; output plugins only present them and never infer certainty independently.
+
+```text
+AniList airing schedule ──> confirmed / high / exact time
+AniList media start date ─> reported / medium / exact date
+Future prediction engine ─> estimated / scored / evidence-backed
+```
+
+This separation keeps factual source data, curated corrections, and future predictions auditable. Calendar, dashboard, account filtering, notifications, and APIs will consume the same intelligence fields.

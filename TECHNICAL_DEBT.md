@@ -1,26 +1,18 @@
-# Technical debt
+# Technical Debt
 
-## Known data limitations
+## Open items
 
-- AniList media start dates do not represent every regional theatrical or streaming date.
-- Date-only releases are intentionally all-day events because an exact time is unavailable.
-- Entries with incomplete month/day values are skipped.
-- Provider availability may vary by region even when a global provider link exists.
-- AniList external links do not consistently include subtitle languages, dub languages, or simulcast status.
-- Curated provider knowledge is currently repository-managed JSON rather than a database.
-- The model stores one canonical non-episode release per AniList title and release type. Regional theatrical and home-video releases require a future release-variant model.
+- AniList media start dates do not identify region, theatrical market, or streaming availability; they remain `reported`, not `confirmed`.
+- The generator currently omits partial dates instead of preserving year-only or month-only records.
+- No official delay or cancellation source is integrated yet.
+- No dub-date prediction is implemented. The estimated feed is intentionally empty.
+- Release lifecycle is derived from the current date unless an explicit delayed or cancelled state is supplied.
+- Provider region and language coverage is incomplete and depends on structured links or curated knowledge.
+- Remote poster rendering varies between calendar clients.
 
-## Conscious decisions
+## Accepted design choices
 
-- Unknown streaming availability is not guessed.
-- Crunchyroll-first means display priority, not automatic classification.
-- Empty provider calendars remain valid feeds.
-- Provider confidence applies to availability evidence, not release timing.
-
-## Planned improvements
-
-- Add regional release variants.
-- Add theatrical, streaming, digital, and physical distribution stages.
-- Add source URLs and review metadata to curated knowledge records.
-- Add confirmed versus predicted dub-release objects.
-- Persist normalized releases in a database for account filtering and personalized feeds.
+- Accuracy is preferred over calendar completeness.
+- Unknown information remains unknown.
+- Episode timestamps and date-only media releases remain distinct precision classes.
+- Provider confidence and release-date confidence are separate concepts.

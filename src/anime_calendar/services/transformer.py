@@ -6,7 +6,19 @@ from collections.abc import Iterable
 from datetime import UTC, date, datetime
 from typing import Any
 
-from anime_calendar.models import Anime, ExternalLink, Release, ReleaseType, Trailer
+from anime_calendar.models import (
+    Anime,
+    ExternalLink,
+    Release,
+    ReleaseConfidence,
+    ReleaseDateStatus,
+    ReleaseEvidence,
+    ReleaseEvidenceType,
+    ReleasePrecision,
+    ReleaseType,
+    ReleaseVariant,
+    Trailer,
+)
 from anime_calendar.services.streaming_resolver import resolve_streaming_providers
 
 _WHITESPACE = re.compile(r"\s+")
@@ -108,12 +120,25 @@ def transform_airing_schedule(raw_items: Iterable[dict[str, Any]]) -> list[Relea
             continue
         seen.add(dedupe_key)
 
+        anime = _transform_anime(media)
         releases.append(
             Release(
-                anime=_transform_anime(media),
+                anime=anime,
                 release_type=ReleaseType.EPISODE,
                 episode_number=episode_number,
                 released_at=datetime.fromtimestamp(airing_timestamp, tz=UTC),
+                date_status=ReleaseDateStatus.CONFIRMED,
+                confidence=ReleaseConfidence.HIGH,
+                precision=ReleasePrecision.EXACT_TIME,
+                variant=ReleaseVariant.ORIGINAL,
+                evidence=(
+                    ReleaseEvidence(
+                        evidence_type=ReleaseEvidenceType.ANILIST_AIRING_SCHEDULE,
+                        source_name="AniList airing schedule",
+                        source_url=anime.site_url,
+                        note="Precise upstream airing timestamp.",
+                    ),
+                ),
             )
         )
 
@@ -139,11 +164,27 @@ def transform_media_releases(raw_items: Iterable[dict[str, Any]]) -> list[Releas
             continue
         seen.add(dedupe_key)
 
+        anime = _transform_anime(media)
         releases.append(
             Release(
-                anime=_transform_anime(media),
+                anime=anime,
                 release_type=release_type,
                 released_at=release_date,
+                date_status=ReleaseDateStatus.REPORTED,
+                confidence=ReleaseConfidence.MEDIUM,
+                precision=ReleasePrecision.EXACT_DATE,
+                variant=ReleaseVariant.ORIGINAL,
+                evidence=(
+                    ReleaseEvidence(
+                        evidence_type=ReleaseEvidenceType.ANILIST_MEDIA_START_DATE,
+                        source_name="AniList media start date",
+                        source_url=anime.site_url,
+                        note=(
+                            "Date-only upstream metadata; region and theatrical/streaming context "
+                            "may be unspecified."
+                        ),
+                    ),
+                ),
             )
         )
 
@@ -173,5 +214,7 @@ def merge_releases(*release_groups: Iterable[Release]) -> list[Release]:
             and (release.anime.anilist_id, release.released_at) in episode_dates
         ):
             continue
-        merged[release.stable_key] = release
+        existing = merged.get(release.stable_key)
+        if existing is None or release.confidence.rank > existing.confidence.rank:
+            merged[release.stable_key] = release
     return sorted(merged.values(), key=_sort_value)

@@ -1,8 +1,8 @@
 # Anime Calendar v2
 
-Anime Calendar v2 is a streaming-aware anime release generator. It combines AniList episode schedules and media start dates into Apple Calendar-compatible feeds for episodes, movies, OVAs, ONAs, specials, TV shorts, and music anime.
+Anime Calendar v2 is a streaming-aware anime release intelligence engine. It combines AniList episode schedules and media start dates into Apple Calendar-compatible feeds for episodes, movies, OVAs, ONAs, specials, TV shorts, and music anime.
 
-Version **0.4.0** adds the Streaming Intelligence Engine: canonical provider records, Crunchyroll-first ordering, confidence and evidence metadata, provider-specific calendars, and a curated knowledge package.
+Version **0.5.0** adds Release Intelligence: explicit date status, confidence, precision, version, lifecycle, and evidence. The generator distinguishes confirmed episode timestamps from reported movie and special dates instead of presenting every upstream date with the same certainty.
 
 ## Generated calendars
 
@@ -13,35 +13,45 @@ Running the application creates:
 - `output/episodes.ics` — episode airings
 - `output/movies.ics` — anime movie premieres
 - `output/specials.ics` — OVAs, ONAs, specials, TV shorts, and music anime
-- `output/streaming_confirmed.ics` — releases with at least one resolved provider
+- `output/streaming_confirmed.ics` — releases with a resolved provider
 - `output/crunchyroll.ics` — releases resolved to Crunchyroll
 - `output/hidive.ics` — releases resolved to HIDIVE
+- `output/confirmed_releases.ics` — precise confirmed dates
+- `output/reported_releases.ics` — upstream dates that remain context-dependent
+- `output/estimated_releases.ics` — transparent future predictions; intentionally empty today
 
-Empty provider feeds are valid calendars. They mean no matching provider was confirmed in the current data window.
+Empty feeds are valid calendars and communicate that no matching records were available in the current window.
+
+## Release intelligence
+
+Each release can include:
+
+- Date status: confirmed, reported, estimated, or unknown
+- Confidence: verified, high, medium, low, or unknown
+- Precision: exact time, exact date, partial date, or unknown
+- Version: original, sub, dub, or unknown
+- Lifecycle: scheduled, released, delayed, cancelled, or unknown
+- Evidence records explaining the source of the date
+
+Current rules are deliberately conservative:
+
+- AniList airing schedules become confirmed, high-confidence, exact-time episode records.
+- AniList media start dates become reported, medium-confidence, exact-date records.
+- No dub date or movie streaming date is predicted in v0.5.0.
+
+Calendar notes include a Release Intelligence section and supporting evidence.
 
 ## Streaming intelligence
 
-Provider records include:
-
-- Canonical provider ID and display name
-- Direct watch URL when available
-- Confidence: verified, high, medium, low, or unknown
-- Evidence: official streaming link, external link, or curated knowledge
-- Optional regions
-- Optional subtitle and dub languages
-- Optional simulcast status
-
-Official AniList links marked as streaming are treated as verified. Recognized provider links without that marker are high confidence. Curated records can supplement missing structured data without pretending that unknown availability is confirmed.
-
-Crunchyroll is ordered first when multiple providers are available, matching this project's Crunchyroll-first preference while retaining every resolved provider.
+Provider records include canonical identity, watch URL, confidence, evidence, optional regions, languages, and simulcast status. Crunchyroll is prioritized for display without discarding other confirmed providers.
 
 ## Release behavior
 
-- Episodes use precise AniList airing timestamps and become timed events.
-- Movies and other one-off releases use AniList start dates and become all-day events.
-- Entries with incomplete dates are omitted instead of receiving invented dates.
-- Duplicate media-start events are suppressed when an episode premiere exists on the same date.
-- Stable event identifiers allow future calendar runs to update existing subscribed events.
+- Episodes use precise timezone-aware airing timestamps.
+- Movies and other one-off releases use all-day dates when only a date is available.
+- Incomplete dates are omitted instead of receiving invented values.
+- Media-start duplicates are suppressed when an episode premiere exists on the same date.
+- Stable event identifiers allow subscribed calendars to update existing events.
 
 ## Requirements
 
@@ -71,36 +81,17 @@ python -m ruff check .
 python -m pytest
 ```
 
-Expected result for v0.4.0:
+Expected result for v0.5.0:
 
 ```text
-11 passed
+14 passed
 ```
-
-## Curated provider knowledge
-
-Provider definitions live in:
-
-```text
-src/anime_calendar/knowledge/providers.json
-```
-
-Per-title curated records live in:
-
-```text
-src/anime_calendar/knowledge/anime_streaming.json
-```
-
-See `docs/STREAMING_KNOWLEDGE.md` before adding records.
-
-## Artwork compatibility
-
-Poster URLs are stored in event descriptions and as URI attachments. Calendar applications vary in whether remote images render inline, but the URLs remain accessible from the event.
 
 ## Documentation
 
 - `docs/ARCHITECTURE.md`
 - `docs/STREAMING_KNOWLEDGE.md`
+- `docs/RELEASE_INTELLIGENCE.md`
 - `ROADMAP.md`
 - `TECHNICAL_DEBT.md`
 - `CHANGELOG.md`
