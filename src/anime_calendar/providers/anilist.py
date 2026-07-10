@@ -30,11 +30,39 @@ query ($page: Int!, $perPage: Int!, $airingAtGreater: Int!, $airingAtLesser: Int
         title {
           romaji
           english
+          native
         }
+        description(asHtml: false)
         genres
+        season
+        seasonYear
+        format
+        status
+        source
+        episodes
+        duration
+        averageScore
         coverImage {
           extraLarge
           large
+        }
+        bannerImage
+        studios(isMain: true) {
+          nodes {
+            name
+            isAnimationStudio
+          }
+        }
+        trailer {
+          id
+          site
+          thumbnail
+        }
+        externalLinks {
+          site
+          url
+          type
+          language
         }
       }
     }
@@ -53,7 +81,7 @@ def fetch_airing_schedule(settings: Settings) -> list[dict[str, Any]]:
     results: list[dict[str, Any]] = []
 
     with requests.Session() as session:
-        session.headers.update({"User-Agent": "anime-calendar-v2/0.1"})
+        session.headers.update({"User-Agent": "anime-calendar-v2/0.2"})
 
         for page in range(1, settings.max_pages + 1):
             variables = {

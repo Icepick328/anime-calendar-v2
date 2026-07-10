@@ -1,69 +1,55 @@
-# Sprint 1 installation on Windows
+# Sprint 2 installation on Windows
 
-## 1. Copy the snapshot
+## 1. Back up the working milestone
 
-Extract the ZIP. Copy all files and folders from `anime-calendar-v2-sprint1` into:
+From the repository root, confirm Sprint 1.1 is committed and pushed:
+
+```powershell
+git status
+git push
+```
+
+## 2. Copy the Sprint 2 snapshot
+
+Extract the ZIP. Copy every file and folder from inside `anime-calendar-v2-sprint2` into your existing repository:
 
 ```text
 C:\Users\Brad\Documents\GitHub\anime-calendar-v2
 ```
 
-The destination repository should contain `pyproject.toml`, `src`, `tests`, and the other files at its top level.
+Choose **Replace the files in the destination** when Windows prompts. Do not delete `.git` or `.venv`.
 
-## 2. Create and activate the virtual environment
+## 3. Refresh the editable installation
 
 ```powershell
 cd $HOME\Documents\GitHub\anime-calendar-v2
-python -m venv .venv
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
 .\.venv\Scripts\Activate.ps1
-```
-
-## 3. Install Sprint 1
-
-```powershell
-python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
 ```
 
-## 4. Verify the code
+## 4. Verify Sprint 2
 
 ```powershell
 python -m ruff check .
 python -m pytest
-```
-
-Expected test result:
-
-```text
-2 passed
-```
-
-## 5. Generate the calendar
-
-```powershell
 python -m anime_calendar
 ```
 
-Expected file:
+Expected result:
 
 ```text
+4 passed
 output\anime_calendar.ics
 ```
 
-## 6. Commit and push
+## 5. Commit and push
 
 ```powershell
+git status
 git add .
-git commit -m "Sprint 1: establish Anime Calendar v2 foundation"
-git push -u origin main
+git commit -m "Sprint 2: add rich metadata engine"
+git push
 ```
 
-If Git asks you to identify yourself, run:
-
-```powershell
-git config --global user.name "Icepick328"
-git config --global user.email "YOUR_GITHUB_EMAIL"
-```
-
-Then repeat the commit command.
+The Continuous Integration workflow should lint, test, generate, verify, and upload the calendar artifact.
