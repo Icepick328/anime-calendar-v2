@@ -1,6 +1,16 @@
 from datetime import UTC, date, datetime
 
-from anime_calendar.models import Anime, ExternalLink, Release, ReleaseLabel, ReleaseType, Trailer
+from anime_calendar.models import (
+    Anime,
+    ExternalLink,
+    ProviderConfidence,
+    ProviderEvidence,
+    Release,
+    ReleaseLabel,
+    ReleaseType,
+    StreamingProvider,
+    Trailer,
+)
 
 
 def make_anime(*, total_episodes: int | None = 12, media_format: str = "TV") -> Anime:
@@ -25,6 +35,16 @@ def make_anime(*, total_episodes: int | None = 12, media_format: str = "TV") -> 
         banner_image_url=None,
         trailer=Trailer(site="youtube", trailer_id="xyz"),
         external_links=(ExternalLink(site="Official Site", url="https://example.com"),),
+        streaming_providers=(
+            StreamingProvider(
+                provider_id="crunchyroll",
+                display_name="Crunchyroll",
+                url="https://www.crunchyroll.com/series/example",
+                confidence=ProviderConfidence.VERIFIED,
+                evidence=ProviderEvidence.OFFICIAL_STREAMING_LINK,
+                sub_languages=("English",),
+            ),
+        ),
     )
 
 
@@ -54,3 +74,12 @@ def test_episode_and_movie_release_behavior() -> None:
     assert movie.label is ReleaseLabel.RELEASE
     assert movie.is_all_day
     assert movie.stable_key == "anilist-1-movie"
+
+
+def test_streaming_provider_helpers_and_preference() -> None:
+    anime = make_anime()
+    provider = anime.preferred_streaming_provider
+
+    assert provider is not None
+    assert provider.verified
+    assert provider.language_summary == "Sub: English"

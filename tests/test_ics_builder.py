@@ -3,7 +3,16 @@ from datetime import UTC, date, datetime
 from icalendar import Calendar
 
 from anime_calendar.calendars.ics_builder import build_calendar
-from anime_calendar.models import Anime, ExternalLink, Release, ReleaseType, Trailer
+from anime_calendar.models import (
+    Anime,
+    ExternalLink,
+    ProviderConfidence,
+    ProviderEvidence,
+    Release,
+    ReleaseType,
+    StreamingProvider,
+    Trailer,
+)
 
 
 def make_anime(*, media_format: str = "TV", total_episodes: int | None = 12) -> Anime:
@@ -28,6 +37,16 @@ def make_anime(*, media_format: str = "TV", total_episodes: int | None = 12) -> 
         banner_image_url="https://example.com/banner.jpg",
         trailer=Trailer(site="youtube", trailer_id="abc123"),
         external_links=(ExternalLink(site="Official Site", url="https://example.com/anime"),),
+        streaming_providers=(
+            StreamingProvider(
+                provider_id="crunchyroll",
+                display_name="Crunchyroll",
+                url="https://www.crunchyroll.com/series/example",
+                confidence=ProviderConfidence.VERIFIED,
+                evidence=ProviderEvidence.OFFICIAL_STREAMING_LINK,
+                dub_languages=("English",),
+            ),
+        ),
     )
 
 
@@ -45,6 +64,8 @@ def test_build_calendar_contains_timed_episode_metadata() -> None:
     assert "Episode 7" in str(event.get("summary"))
     assert "anilist-42-ep-7" in str(event.get("uid"))
     assert "Summer 2026" in str(event.get("description"))
+    assert "Crunchyroll" in str(event.get("description"))
+    assert event.get("url") == "https://www.crunchyroll.com/series/example"
     assert isinstance(event.decoded("dtstart"), datetime)
 
 

@@ -48,16 +48,25 @@ jobs:
       - name: Verify calendar outputs
         shell: bash
         run: |
-          for file in anime_calendar.ics all_releases.ics episodes.ics movies.ics specials.ics; do
+          files=(
+            anime_calendar.ics
+            all_releases.ics
+            episodes.ics
+            movies.ics
+            specials.ics
+            streaming_confirmed.ics
+            crunchyroll.ics
+            hidive.ics
+          )
+          for file in "${files[@]}"; do
             test -f "output/$file"
             grep -q "BEGIN:VCALENDAR" "output/$file"
             grep -q "END:VCALENDAR" "output/$file"
           done
           echo "All calendar feeds generated successfully."
-          echo "All releases: $(grep -c 'BEGIN:VEVENT' output/all_releases.ics)"
-          echo "Episodes: $(grep -c 'BEGIN:VEVENT' output/episodes.ics)"
-          echo "Movies: $(grep -c 'BEGIN:VEVENT' output/movies.ics)"
-          echo "Specials: $(grep -c 'BEGIN:VEVENT' output/specials.ics)"
+          echo "All releases: $(grep -c 'BEGIN:VEVENT' output/all_releases.ics || true)"
+          echo "Crunchyroll: $(grep -c 'BEGIN:VEVENT' output/crunchyroll.ics || true)"
+          echo "HIDIVE: $(grep -c 'BEGIN:VEVENT' output/hidive.ics || true)"
 
       - name: Upload generated calendars
         uses: actions/upload-artifact@v7

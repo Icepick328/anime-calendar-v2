@@ -23,6 +23,30 @@ class ReleaseLabel(StrEnum):
     RELEASE = "release"
 
 
+class ProviderConfidence(StrEnum):
+    VERIFIED = "verified"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+    UNKNOWN = "unknown"
+
+    @property
+    def rank(self) -> int:
+        return {
+            ProviderConfidence.UNKNOWN: 0,
+            ProviderConfidence.LOW: 1,
+            ProviderConfidence.MEDIUM: 2,
+            ProviderConfidence.HIGH: 3,
+            ProviderConfidence.VERIFIED: 4,
+        }[self]
+
+
+class ProviderEvidence(StrEnum):
+    OFFICIAL_STREAMING_LINK = "official_streaming_link"
+    EXTERNAL_LINK = "external_link"
+    CURATED_KNOWLEDGE = "curated_knowledge"
+
+
 @dataclass(frozen=True, slots=True)
 class ExternalLink:
     site: str
@@ -48,6 +72,32 @@ class Trailer:
 
 
 @dataclass(frozen=True, slots=True)
+class StreamingProvider:
+    provider_id: str
+    display_name: str
+    url: str | None
+    confidence: ProviderConfidence
+    evidence: ProviderEvidence
+    regions: tuple[str, ...] = ()
+    sub_languages: tuple[str, ...] = ()
+    dub_languages: tuple[str, ...] = ()
+    simulcast: bool | None = None
+
+    @property
+    def verified(self) -> bool:
+        return self.confidence is ProviderConfidence.VERIFIED
+
+    @property
+    def language_summary(self) -> str | None:
+        parts: list[str] = []
+        if self.sub_languages:
+            parts.append(f"Sub: {', '.join(self.sub_languages)}")
+        if self.dub_languages:
+            parts.append(f"Dub: {', '.join(self.dub_languages)}")
+        return " | ".join(parts) or None
+
+
+@dataclass(frozen=True, slots=True)
 class Anime:
     anilist_id: int
     title: str
@@ -69,6 +119,7 @@ class Anime:
     banner_image_url: str | None
     trailer: Trailer | None
     external_links: tuple[ExternalLink, ...]
+    streaming_providers: tuple[StreamingProvider, ...] = ()
 
     @property
     def season_label(self) -> str | None:
@@ -77,6 +128,12 @@ class Anime:
         if self.season_year:
             return str(self.season_year)
         return None
+
+    @property
+    def preferred_streaming_provider(self) -> StreamingProvider | None:
+        if not self.streaming_providers:
+            return None
+        return self.streaming_providers[0]
 
 
 @dataclass(frozen=True, slots=True)

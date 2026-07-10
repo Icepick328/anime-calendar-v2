@@ -1,21 +1,28 @@
 # Changelog
 
+## 0.4.0 — Streaming Intelligence
+
+- Added canonical `StreamingProvider`, confidence, and evidence models.
+- Added provider normalization using canonical aliases and URL domains.
+- Added Crunchyroll-first provider ordering without discarding other services.
+- Added a curated streaming knowledge package.
+- Added streaming sections and direct watch URLs to calendar events.
+- Added confirmed-streaming, Crunchyroll, and HIDIVE calendar feeds.
+- Added provider categories to iCalendar events.
+- Added resolver, model, transformer, and calendar tests.
+- Expanded architecture, roadmap, setup, and technical-debt documentation.
+
 ## 0.3.0 — Universal Release Generator
 
-- Replace the episode-only domain object with a generic `Release` model.
-- Add first-class release types for episodes, movies, OVAs, ONAs, specials, TV shorts, and music anime.
-- Add a second AniList ingestion path for media start dates.
-- Preserve exact episode timestamps while representing date-only releases as all-day calendar events.
-- Generate combined, episode-only, movie-only, and specials calendar feeds.
-- Add cross-source deduplication and stable release identifiers.
-- Expand automated tests and CI artifact validation.
+- Added a generic release model for episodes, movies, OVAs, ONAs, specials, TV shorts, and music anime.
+- Added media start-date ingestion and multiple calendar feeds.
+- Added mixed timed/all-day ordering and cross-source duplicate suppression.
 
-## 0.2.0 — Rich Metadata Engine
+## 0.2.0 — Metadata Engine
 
-- Add synopsis, artwork, studios, season data, scores, trailers, and external links.
-- Add premiere and finale labels.
-- Enrich Apple Calendar event descriptions.
+- Added rich anime metadata, artwork, links, and season labels.
+- Added rich calendar descriptions and expanded tests.
 
 ## 0.1.0 — Foundation
 
-- Add AniList schedule ingestion, typed models, ICS generation, tests, linting, and CI.
+- Added package architecture, AniList ingestion, ICS generation, configuration, logging, tests, and CI.

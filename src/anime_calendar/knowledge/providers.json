@@ -1,0 +1,37 @@
+{
+  "crunchyroll": {
+    "display_name": "Crunchyroll",
+    "aliases": ["crunchyroll", "crunchy roll"],
+    "domains": ["crunchyroll.com"]
+  },
+  "hidive": {
+    "display_name": "HIDIVE",
+    "aliases": ["hidive", "hi dive"],
+    "domains": ["hidive.com"]
+  },
+  "netflix": {
+    "display_name": "Netflix",
+    "aliases": ["netflix"],
+    "domains": ["netflix.com"]
+  },
+  "hulu": {
+    "display_name": "Hulu",
+    "aliases": ["hulu"],
+    "domains": ["hulu.com"]
+  },
+  "disney_plus": {
+    "display_name": "Disney+",
+    "aliases": ["disney+", "disney plus", "disneyplus"],
+    "domains": ["disneyplus.com"]
+  },
+  "prime_video": {
+    "display_name": "Prime Video",
+    "aliases": ["prime video", "amazon prime video", "amazon video"],
+    "domains": ["primevideo.com", "amazon.com"]
+  },
+  "youtube": {
+    "display_name": "YouTube",
+    "aliases": ["youtube"],
+    "domains": ["youtube.com", "youtu.be"]
+  }
+}

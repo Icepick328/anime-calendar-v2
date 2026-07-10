@@ -7,6 +7,7 @@ from datetime import UTC, date, datetime
 from typing import Any
 
 from anime_calendar.models import Anime, ExternalLink, Release, ReleaseType, Trailer
+from anime_calendar.services.streaming_resolver import resolve_streaming_providers
 
 _WHITESPACE = re.compile(r"\s+")
 _FORMAT_TO_RELEASE_TYPE = {
@@ -62,6 +63,8 @@ def _transform_anime(media: dict[str, Any]) -> Anime:
     studio_nodes = (media.get("studios") or {}).get("nodes") or []
     anime_id = int(media["id"])
 
+    external_links = _transform_external_links(media.get("externalLinks"))
+
     return Anime(
         anilist_id=anime_id,
         title=title_data.get("english") or romaji_title,
@@ -86,7 +89,8 @@ def _transform_anime(media: dict[str, Any]) -> Anime:
         cover_image_url=cover.get("extraLarge") or cover.get("large"),
         banner_image_url=media.get("bannerImage"),
         trailer=_transform_trailer(media.get("trailer")),
-        external_links=_transform_external_links(media.get("externalLinks")),
+        external_links=external_links,
+        streaming_providers=resolve_streaming_providers(anime_id, external_links),
     )
 
 

@@ -5,7 +5,7 @@ from pathlib import Path
 
 from icalendar import Calendar, Event
 
-from anime_calendar.models import Release, ReleaseLabel, ReleaseType
+from anime_calendar.models import Release, ReleaseLabel, ReleaseType, StreamingProvider
 
 
 def _humanize(value: str | None) -> str | None:
@@ -26,6 +26,21 @@ def _release_name(release: Release) -> str:
 
 def _summary(release: Release) -> str:
     return f"{release.anime.title} — {_release_name(release)}"
+
+
+def _provider_lines(provider: StreamingProvider) -> list[str]:
+    confidence = provider.confidence.value.title()
+    lines = [f"{provider.display_name} — {confidence}"]
+    if provider.url:
+        lines.append(provider.url)
+    if provider.regions:
+        lines.append(f"Regions: {', '.join(provider.regions)}")
+    if provider.language_summary:
+        lines.append(provider.language_summary)
+    if provider.simulcast is not None:
+        lines.append(f"Simulcast: {'Yes' if provider.simulcast else 'No'}")
+    lines.append(f"Evidence: {_humanize(provider.evidence.value)}")
+    return lines
 
 
 def _description(release: Release) -> str:
@@ -59,6 +74,16 @@ def _description(release: Release) -> str:
         lines.append(f"Genres: {', '.join(anime.genres)}")
     if anime.studios:
         lines.append(f"Studios: {', '.join(anime.studios)}")
+
+    if anime.streaming_providers:
+        lines.extend(["", "Streaming"])
+        for index, provider in enumerate(anime.streaming_providers):
+            if index:
+                lines.append("")
+            lines.extend(_provider_lines(provider))
+    else:
+        lines.extend(["", "Streaming", "No confirmed streaming provider found."])
+
     if anime.synopsis:
         lines.extend(["", "Synopsis", anime.synopsis])
 
@@ -69,8 +94,11 @@ def _description(release: Release) -> str:
         lines.append(f"Banner: {anime.banner_image_url}")
     if anime.trailer and anime.trailer.url:
         lines.append(f"Trailer: {anime.trailer.url}")
+
+    provider_urls = {provider.url for provider in anime.streaming_providers if provider.url}
     for link in anime.external_links:
-        lines.append(f"{link.site}: {link.url}")
+        if link.url not in provider_urls:
+            lines.append(f"{link.site}: {link.url}")
     return "\n".join(lines)
 
 
@@ -102,16 +130,23 @@ def build_calendar(
             event.add("dtstart", release.released_at)
             event.add("dtend", release.released_at + timedelta(minutes=event_duration_minutes))
 
-        event.add("url", release.anime.site_url)
-        event.add("description", _description(release))
-        event.add(
-            "categories",
-            [
-                "Anime",
-                _humanize(release.release_type.value) or "Release",
-                _humanize(release.label.value) or "Release",
-            ],
+        preferred_provider = release.anime.preferred_streaming_provider
+        event_url = (
+            preferred_provider.url
+            if preferred_provider and preferred_provider.url
+            else release.anime.site_url
         )
+        event.add("url", event_url)
+        event.add("description", _description(release))
+
+        categories = [
+            "Anime",
+            _humanize(release.release_type.value) or "Release",
+            _humanize(release.label.value) or "Release",
+        ]
+        categories.extend(provider.display_name for provider in release.anime.streaming_providers)
+        event.add("categories", categories)
+
         if release.anime.cover_image_url:
             event.add(
                 "attach",

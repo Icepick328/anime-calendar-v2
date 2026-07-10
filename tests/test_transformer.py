@@ -27,7 +27,14 @@ def media_payload(*, media_id: int = 42, media_format: str = "TV") -> dict:
         "bannerImage": "https://example.com/banner.jpg",
         "studios": {"nodes": [{"name": "Example Studio", "isAnimationStudio": True}]},
         "trailer": {"site": "youtube", "id": "abc123", "thumbnail": None},
-        "externalLinks": [{"site": "Official Site", "url": "https://example.com/anime"}],
+        "externalLinks": [
+            {"site": "Official Site", "url": "https://example.com/anime"},
+            {
+                "site": "Crunchyroll",
+                "url": "https://www.crunchyroll.com/series/example",
+                "type": "STREAMING",
+            },
+        ],
     }
 
 
@@ -41,6 +48,7 @@ def test_transform_airing_schedule_enriches_metadata_and_deduplicates() -> None:
     assert release.released_at == datetime.fromtimestamp(1780000000, tz=UTC)
     assert release.anime.synopsis == "A great anime. Second line."
     assert release.anime.studios == ("Example Studio",)
+    assert release.anime.streaming_providers[0].provider_id == "crunchyroll"
 
 
 def test_transform_media_releases_creates_all_day_movie_and_skips_partial_dates() -> None:

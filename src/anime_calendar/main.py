@@ -37,6 +37,17 @@ def _write_feed(
     return write_calendar(calendar, output_directory / filename)
 
 
+def _provider_releases(releases: list[Release], provider_id: str) -> list[Release]:
+    return [
+        release
+        for release in releases
+        if any(
+            provider.provider_id == provider_id
+            for provider in release.anime.streaming_providers
+        )
+    ]
+
+
 def main() -> int:
     configure_logging()
 
@@ -63,6 +74,11 @@ def main() -> int:
                 ReleaseType.OTHER,
             }
         ]
+        streaming_confirmed = [
+            item for item in all_releases if item.anime.streaming_providers
+        ]
+        crunchyroll = _provider_releases(all_releases, "crunchyroll")
+        hidive = _provider_releases(all_releases, "hidive")
 
         output_directory = Path(settings.output_directory)
         feeds = (
@@ -71,6 +87,9 @@ def main() -> int:
             (episode_releases, "Anime Episodes", "episodes.ics"),
             (movies, "Anime Movies", "movies.ics"),
             (specials, "Anime OVAs, ONAs & Specials", "specials.ics"),
+            (streaming_confirmed, "Anime with Confirmed Streaming", "streaming_confirmed.ics"),
+            (crunchyroll, "Anime on Crunchyroll", "crunchyroll.ics"),
+            (hidive, "Anime on HIDIVE", "hidive.ics"),
         )
         for releases, name, filename in feeds:
             path = _write_feed(

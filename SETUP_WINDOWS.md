@@ -1,36 +1,20 @@
-# Windows upgrade guide — v0.3.0
+# Windows setup and v0.4.0 upgrade
 
-## 1. Preserve the current working version
+## Upgrade an existing clone
+
+1. Commit and push your current work.
+2. Extract the v0.4.0 ZIP.
+3. Copy everything inside the extracted folder into the repository root.
+4. Replace files when Windows asks.
+5. Do not delete `.git` or `.venv`.
+
+Then run:
 
 ```powershell
 cd $HOME\Documents\GitHub\anime-calendar-v2
-git status
-git push
-```
-
-## 2. Copy the release snapshot
-
-Extract the downloaded ZIP. Copy everything inside `anime-calendar-v2-v0.3.0` into your repository folder:
-
-```text
-C:\Users\Brad\Documents\GitHub\anime-calendar-v2
-```
-
-Choose **Replace the files in the destination**.
-
-Do not delete `.git` or `.venv`.
-
-## 3. Refresh the editable installation
-
-```powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
 .\.venv\Scripts\Activate.ps1
 python -m pip install -e ".[dev]"
-```
-
-## 4. Verify
-
-```powershell
 python -m ruff check .
 python -m pytest
 python -m anime_calendar
@@ -39,10 +23,10 @@ python -m anime_calendar
 Expected tests:
 
 ```text
-8 passed
+11 passed
 ```
 
-Expected output files:
+Generated calendars include:
 
 ```text
 output\anime_calendar.ics
@@ -50,13 +34,9 @@ output\all_releases.ics
 output\episodes.ics
 output\movies.ics
 output\specials.ics
+output\streaming_confirmed.ics
+output\crunchyroll.ics
+output\hidive.ics
 ```
 
-## 5. Commit
-
-```powershell
-git status
-git add .
-git commit -m "v0.3.0: add universal anime release generator"
-git push
-```
+Empty provider feeds are valid and indicate that no matching provider was confirmed during the current look-ahead window.
