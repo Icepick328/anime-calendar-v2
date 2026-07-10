@@ -1,35 +1,71 @@
-name: CI
+name: Continuous Integration
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+
   pull_request:
+    branches:
+      - main
+
   workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  test:
+  validate:
+    name: Lint, test, and build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
 
       - name: Install project
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -e ".[dev]"
+        run: python -m pip install -e ".[dev]"
 
-      - name: Lint
+      - name: Run Ruff
         run: python -m ruff check .
 
-      - name: Test
+      - name: Run tests
         run: python -m pytest
+
+      - name: Generate calendar
+        run: python -m anime_calendar
+
+      - name: Verify calendar output
+        shell: bash
+        run: |
+          test -f output/anime_calendar.ics
+          test -s output/anime_calendar.ics
+          grep -q "BEGIN:VCALENDAR" output/anime_calendar.ics
+          grep -q "END:VCALENDAR" output/anime_calendar.ics
+
+          echo "Calendar file generated successfully."
+          echo "File size: $(wc -c < output/anime_calendar.ics) bytes"
+          echo "Events: $(grep -c 'BEGIN:VEVENT' output/anime_calendar.ics)"
+
+      - name: Upload generated calendar
+        uses: actions/upload-artifact@v7
+        with:
+          name: anime-calendar-${{ github.sha }}
+          path: output/anime_calendar.ics
+          if-no-files-found: error
+          retention-days: 14
