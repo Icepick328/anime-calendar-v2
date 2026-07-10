@@ -8,13 +8,22 @@ from typing import Any
 
 @dataclass(frozen=True, slots=True)
 class Settings:
-    calendar_name: str = "Anime Releases"
-    lookahead_days: int = 90
+    calendar_name: str = "All Anime Releases"
+    lookahead_days: int = 180
     max_pages: int = 10
+    media_max_pages: int = 10
     events_per_page: int = 50
     event_duration_minutes: int = 30
-    output_path: str = "output/anime_calendar.ics"
+    output_directory: str = "output"
     request_timeout_seconds: int = 30
+    non_episode_formats: tuple[str, ...] = (
+        "MOVIE",
+        "OVA",
+        "ONA",
+        "SPECIAL",
+        "TV_SHORT",
+        "MUSIC",
+    )
 
 
 def load_settings(path: str | Path = "config.json") -> Settings:
@@ -27,9 +36,10 @@ def load_settings(path: str | Path = "config.json") -> Settings:
     except json.JSONDecodeError as exc:
         raise ValueError(f"Invalid JSON in {config_path}: {exc}") from exc
 
-    allowed = {field_name for field_name in Settings.__dataclass_fields__}
+    allowed = set(Settings.__dataclass_fields__)
     unknown = sorted(set(raw) - allowed)
     if unknown:
         raise ValueError(f"Unknown configuration keys: {', '.join(unknown)}")
-
+    if "non_episode_formats" in raw:
+        raw["non_episode_formats"] = tuple(raw["non_episode_formats"])
     return Settings(**raw)

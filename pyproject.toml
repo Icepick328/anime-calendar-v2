@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "anime-calendar-v2"
-version = "0.2.0"
-description = "Generate rich Apple Calendar-compatible anime release feeds from AniList."
+version = "0.3.0"
+description = "Generate Apple Calendar-compatible episode, movie, OVA, ONA, and special anime release feeds."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

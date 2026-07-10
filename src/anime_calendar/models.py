@@ -1,14 +1,26 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime
 from enum import StrEnum
+
+
+class ReleaseType(StrEnum):
+    EPISODE = "episode"
+    MOVIE = "movie"
+    OVA = "ova"
+    ONA = "ona"
+    SPECIAL = "special"
+    TV_SHORT = "tv_short"
+    MUSIC = "music"
+    OTHER = "other"
 
 
 class ReleaseLabel(StrEnum):
     EPISODE = "episode"
     PREMIERE = "premiere"
     FINALE = "finale"
+    RELEASE = "release"
 
 
 @dataclass(frozen=True, slots=True)
@@ -68,15 +80,32 @@ class Anime:
 
 
 @dataclass(frozen=True, slots=True)
-class EpisodeRelease:
+class Release:
     anime: Anime
-    episode_number: int
-    airing_at: datetime
+    release_type: ReleaseType
+    released_at: datetime | date
+    episode_number: int | None = None
 
     @property
     def label(self) -> ReleaseLabel:
+        if self.release_type is not ReleaseType.EPISODE:
+            return ReleaseLabel.RELEASE
         if self.episode_number == 1:
             return ReleaseLabel.PREMIERE
-        if self.anime.total_episodes and self.episode_number == self.anime.total_episodes:
+        if (
+            self.episode_number is not None
+            and self.anime.total_episodes
+            and self.episode_number == self.anime.total_episodes
+        ):
             return ReleaseLabel.FINALE
         return ReleaseLabel.EPISODE
+
+    @property
+    def is_all_day(self) -> bool:
+        return isinstance(self.released_at, date) and not isinstance(self.released_at, datetime)
+
+    @property
+    def stable_key(self) -> str:
+        if self.release_type is ReleaseType.EPISODE:
+            return f"anilist-{self.anime.anilist_id}-ep-{self.episode_number}"
+        return f"anilist-{self.anime.anilist_id}-{self.release_type.value}"

@@ -2,11 +2,9 @@ name: Continuous Integration
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -33,11 +31,10 @@ jobs:
           cache: pip
           cache-dependency-path: pyproject.toml
 
-      - name: Upgrade pip
-        run: python -m pip install --upgrade pip
-
       - name: Install project
-        run: python -m pip install -e ".[dev]"
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
 
       - name: Run Ruff
         run: python -m ruff check .
@@ -45,25 +42,27 @@ jobs:
       - name: Run tests
         run: python -m pytest
 
-      - name: Generate calendar
+      - name: Generate release calendars
         run: python -m anime_calendar
 
-      - name: Verify calendar output
+      - name: Verify calendar outputs
         shell: bash
         run: |
-          test -f output/anime_calendar.ics
-          test -s output/anime_calendar.ics
-          grep -q "BEGIN:VCALENDAR" output/anime_calendar.ics
-          grep -q "END:VCALENDAR" output/anime_calendar.ics
+          for file in anime_calendar.ics all_releases.ics episodes.ics movies.ics specials.ics; do
+            test -f "output/$file"
+            grep -q "BEGIN:VCALENDAR" "output/$file"
+            grep -q "END:VCALENDAR" "output/$file"
+          done
+          echo "All calendar feeds generated successfully."
+          echo "All releases: $(grep -c 'BEGIN:VEVENT' output/all_releases.ics)"
+          echo "Episodes: $(grep -c 'BEGIN:VEVENT' output/episodes.ics)"
+          echo "Movies: $(grep -c 'BEGIN:VEVENT' output/movies.ics)"
+          echo "Specials: $(grep -c 'BEGIN:VEVENT' output/specials.ics)"
 
-          echo "Calendar file generated successfully."
-          echo "File size: $(wc -c < output/anime_calendar.ics) bytes"
-          echo "Events: $(grep -c 'BEGIN:VEVENT' output/anime_calendar.ics)"
-
-      - name: Upload generated calendar
+      - name: Upload generated calendars
         uses: actions/upload-artifact@v7
         with:
-          name: anime-calendar-${{ github.sha }}
-          path: output/anime_calendar.ics
+          name: anime-release-calendars-${{ github.sha }}
+          path: output/*.ics
           if-no-files-found: error
           retention-days: 14

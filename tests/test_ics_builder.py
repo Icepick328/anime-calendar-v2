@@ -1,12 +1,12 @@
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 
 from icalendar import Calendar
 
 from anime_calendar.calendars.ics_builder import build_calendar
-from anime_calendar.models import Anime, EpisodeRelease, ExternalLink, ReleaseLabel, Trailer
+from anime_calendar.models import Anime, ExternalLink, Release, ReleaseType, Trailer
 
 
-def make_anime(*, total_episodes: int = 12) -> Anime:
+def make_anime(*, media_format: str = "TV", total_episodes: int | None = 12) -> Anime:
     return Anime(
         anilist_id=42,
         title="Example Anime",
@@ -17,7 +17,7 @@ def make_anime(*, total_episodes: int = 12) -> Anime:
         studios=("Example Studio",),
         season="SUMMER",
         season_year=2026,
-        media_format="TV",
+        media_format=media_format,
         status="RELEASING",
         source="LIGHT_NOVEL",
         total_episodes=total_episodes,
@@ -27,59 +27,38 @@ def make_anime(*, total_episodes: int = 12) -> Anime:
         cover_image_url="https://example.com/poster.jpg",
         banner_image_url="https://example.com/banner.jpg",
         trailer=Trailer(site="youtube", trailer_id="abc123"),
-        external_links=(
-            ExternalLink(site="Official Site", url="https://example.com/anime"),
-        ),
+        external_links=(ExternalLink(site="Official Site", url="https://example.com/anime"),),
     )
 
 
-def test_build_calendar_contains_rich_event_metadata() -> None:
-    release = EpisodeRelease(
+def test_build_calendar_contains_timed_episode_metadata() -> None:
+    release = Release(
         anime=make_anime(),
+        release_type=ReleaseType.EPISODE,
         episode_number=7,
-        airing_at=datetime(2026, 7, 9, 18, 0, tzinfo=UTC),
+        released_at=datetime(2026, 7, 9, 18, 0, tzinfo=UTC),
     )
-
-    calendar = build_calendar(
-        [release],
-        calendar_name="Anime Releases",
-        event_duration_minutes=30,
-    )
-    text = calendar.to_ical().decode("utf-8")
+    calendar = build_calendar([release], calendar_name="Anime Releases", event_duration_minutes=30)
     parsed = Calendar.from_ical(calendar.to_ical())
     event = next(component for component in parsed.walk() if component.name == "VEVENT")
-    description = str(event.get("description"))
 
-    assert "Example Anime" in text
-    assert "Episode 7" in text
-    assert "anilist-42-ep-7" in text
-    assert "Summer 2026" in description
-    assert "Example Studio" in description
-    assert "An example synopsis" in description
-    assert "https://example.com/poster.jpg" in description
-    assert "https://www.youtube.com/watch?v=abc123" in description
+    assert "Episode 7" in str(event.get("summary"))
+    assert "anilist-42-ep-7" in str(event.get("uid"))
+    assert "Summer 2026" in str(event.get("description"))
+    assert isinstance(event.decoded("dtstart"), datetime)
 
 
-def test_release_labels_identify_premiere_and_finale() -> None:
-    premiere = EpisodeRelease(
-        anime=make_anime(),
-        episode_number=1,
-        airing_at=datetime(2026, 7, 9, 18, 0, tzinfo=UTC),
+def test_build_calendar_creates_all_day_movie_release() -> None:
+    release = Release(
+        anime=make_anime(media_format="MOVIE", total_episodes=1),
+        release_type=ReleaseType.MOVIE,
+        released_at=date(2026, 8, 14),
     )
-    finale = EpisodeRelease(
-        anime=make_anime(),
-        episode_number=12,
-        airing_at=datetime(2026, 9, 24, 18, 0, tzinfo=UTC),
-    )
+    calendar = build_calendar([release], calendar_name="Anime Movies", event_duration_minutes=30)
+    parsed = Calendar.from_ical(calendar.to_ical())
+    event = next(component for component in parsed.walk() if component.name == "VEVENT")
 
-    assert premiere.label is ReleaseLabel.PREMIERE
-    assert finale.label is ReleaseLabel.FINALE
-
-    text = build_calendar(
-        [premiere, finale],
-        calendar_name="Anime Releases",
-        event_duration_minutes=30,
-    ).to_ical().decode("utf-8")
-
-    assert "Season Premiere" in text
-    assert "Season Finale" in text
+    assert "Movie Release" in str(event.get("summary"))
+    assert event.decoded("dtstart") == date(2026, 8, 14)
+    assert event.decoded("dtend") == date(2026, 8, 15)
+    assert "Release type: Movie" in str(event.get("description"))

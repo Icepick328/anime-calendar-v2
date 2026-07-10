@@ -1,18 +1,21 @@
 # Changelog
 
-## 0.2.0 - Sprint 2
+## 0.3.0 — Universal Release Generator
 
-- Added the metadata engine and expanded the typed domain model.
-- Added synopsis, native title, studios, season, format, status, source, duration, score, and total episode metadata.
-- Added banner art, trailer metadata, and normalized external links.
-- Added season premiere and finale labels.
-- Added rich calendar descriptions, categories, timestamps, and poster URI attachments.
-- Expanded the automated test suite and architecture documentation.
+- Replace the episode-only domain object with a generic `Release` model.
+- Add first-class release types for episodes, movies, OVAs, ONAs, specials, TV shorts, and music anime.
+- Add a second AniList ingestion path for media start dates.
+- Preserve exact episode timestamps while representing date-only releases as all-day calendar events.
+- Generate combined, episode-only, movie-only, and specials calendar feeds.
+- Add cross-source deduplication and stable release identifiers.
+- Expand automated tests and CI artifact validation.
 
-## 0.1.0 - Sprint 1
+## 0.2.0 — Rich Metadata Engine
 
-- Added clean `src` package architecture.
-- Added AniList schedule provider with pagination and date filtering.
-- Added typed models and transformation service.
-- Added stable Apple Calendar-compatible ICS generation.
-- Added JSON configuration, logging, tests, and project documentation.
+- Add synopsis, artwork, studios, season data, scores, trailers, and external links.
+- Add premiere and finale labels.
+- Enrich Apple Calendar event descriptions.
+
+## 0.1.0 — Foundation
+
+- Add AniList schedule ingestion, typed models, ICS generation, tests, linting, and CI.
