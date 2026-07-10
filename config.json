@@ -1,0 +1,9 @@
+{
+  "calendar_name": "Anime Releases",
+  "lookahead_days": 90,
+  "max_pages": 10,
+  "events_per_page": 50,
+  "event_duration_minutes": 30,
+  "output_path": "output/anime_calendar.ics",
+  "request_timeout_seconds": 30
+}
