@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.6.1] - 2026-07-17
+
+### Added
+
+- Personalization domain package with immutable identity, profile, preference, and personal-calendar models.
+- Authentication-agnostic repository protocols for identity and preference persistence.
+- Deterministic filtering and ranking engine with explainable decision reasons.
+- ADR-0005 defining the public/private data boundary.
+- Personalization architecture documentation and twelve focused tests.
+
+### Architecture
+
+- Public release intelligence remains account-independent and immutable.
+- Hosted authentication and storage are deferred to adapters in later v0.6 releases.
+
 ## 0.5.1 — Project Constitution
 
 - Add project foundation and mission documents.

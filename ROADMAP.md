@@ -105,3 +105,36 @@ Quality bar:
 Potential directions include AniList account sync, Sign in with Apple, mobile clients, public API access, recommendation and “Anime DNA” features, localization, regional theatrical tracking, Home Assistant integration, and community-maintained knowledge contributions.
 
 These are exploratory until promoted into a scheduled release.
+
+
+### v0.6.1 — Personalization Foundation — Complete
+
+- Immutable user-domain contracts
+- Explainable filtering and ranking
+- Persistence protocols
+- Public/private data boundary ADR
+
+### v0.6.2 — Identity and Persistence
+
+- Supabase project configuration
+- Authentication adapter
+- Database migrations
+- Row-level security policies
+- Account deletion and data export foundations
+
+### v0.6.3 — Preference Persistence
+
+- Saved genres, studios, providers, languages, release types, and favorites
+- Preference validation and migration strategy
+
+### v0.6.4 — Personal Calendar Engine
+
+- Tokenized private calendar subscriptions
+- Revocation and regeneration
+- User-specific ICS feeds
+
+### v0.6.5 — Watchlists and Personal API
+
+- Watchlist states
+- Stable personal API contracts
+- Dashboard and notification integration boundary

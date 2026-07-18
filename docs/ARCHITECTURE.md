@@ -109,3 +109,20 @@ Future prediction engine ─> estimated / scored / evidence-backed
 ```
 
 This separation keeps factual source data, curated corrections, and future predictions auditable. Calendar, dashboard, account filtering, notifications, and APIs will consume the same intelligence fields.
+
+
+## Personalization Layer
+
+The `anime_calendar.personalization` package derives private views from immutable public releases. It owns identity and preference contracts, explainable filter decisions, and deterministic ranking. It does not own authentication sessions, passwords, database clients, or HTTP endpoints.
+
+```text
+Public Release Intelligence + Private User Preferences
+                         |
+                         v
+              Personalization Engine
+                         |
+                         v
+       Calendars / Dashboard / Notifications / API
+```
+
+External identity and persistence systems implement repository protocols at the adapter boundary. See ADR-0005 and `docs/PERSONALIZATION.md`.

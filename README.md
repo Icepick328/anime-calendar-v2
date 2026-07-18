@@ -81,7 +81,7 @@ python -m ruff check .
 python -m pytest
 ```
 
-Expected result for v0.5.1:
+Expected result for v0.6.1:
 
 ```text
 14 passed
@@ -103,3 +103,8 @@ Expected result for v0.5.1:
 - `ROADMAP.md`
 - `TECHNICAL_DEBT.md`
 - `CHANGELOG.md`
+
+
+## Personalization Foundation
+
+Version 0.6.1 introduces account-independent domain contracts and an explainable personalization engine. Public release data remains immutable; private preferences produce derived inclusion and ranking decisions. Authentication and hosted persistence are intentionally deferred to adapter-based milestones. See `docs/PERSONALIZATION.md`.
