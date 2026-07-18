@@ -1,3 +1,22 @@
+# Changelog
+
+## v0.7.0 — Experience Platform Foundation
+
+### Added
+
+- Framework-neutral dashboard definitions and refresh policies.
+- Web-first experience targets with explicit desktop and API support.
+- Widget descriptors, providers, results, registry, and dashboard composer.
+- Synchronous event bus with subscriptions, wildcard handlers, and bounded history.
+- Capability-based plugin manifests and registry.
+- Transport-neutral notification messages, channels, and delivery receipts.
+- Experience design principles, architecture documentation, and ADR-0010.
+
+### Compatibility
+
+- Public calendar generation remains unchanged.
+- Personalization, persistence, watchlists, and Personal API contracts remain unchanged.
+
 ## [0.6.5] - 2026-07-18
 
 ### Added

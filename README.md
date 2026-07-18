@@ -1,5 +1,11 @@
 # Anime Calendar v2
 
+## Current milestone: v0.7.0 — Experience Platform Foundation
+
+The project now includes framework-neutral dashboard, widget, event, plugin, and notification contracts. Delivery priority is **web dashboard first**, then a **customizable desktop app**, followed by the **public API**.
+
+See `docs/EXPERIENCE_PLATFORM.md` and `DESIGN_PRINCIPLES.md`.
+
 Anime Calendar v2 is a streaming-aware anime release intelligence engine. It combines AniList episode schedules and media start dates into Apple Calendar-compatible feeds for episodes, movies, OVAs, ONAs, specials, TV shorts, and music anime.
 
 Version **0.5.1** establishes the Project Constitution while preserving the v0.5.0 Release Intelligence engine: explicit date status, confidence, precision, version, lifecycle, and evidence. The generator distinguishes confirmed episode timestamps from reported movie and special dates instead of presenting every upstream date with the same certainty.

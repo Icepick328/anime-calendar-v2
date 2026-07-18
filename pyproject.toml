@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "anime-calendar-v2"
-version = "0.6.5"
+version = "0.7.0"
 description = "Generate streaming-aware Apple Calendar feeds for episodes, movies, OVAs, ONAs, and specials."
 readme = "README.md"
 requires-python = ">=3.12"

@@ -2,156 +2,70 @@
 
 > **Anime Calendar v2 is an open-source Anime Release Intelligence Platform dedicated to accuracy, transparency, personalization, and long-term maintainability.**
 
-The roadmap communicates intent, not guarantees. Scope may change when evidence, security, maintainability, or user value argues for a better sequence.
+The roadmap communicates intent, not guarantees. Security, evidence, maintainability, accessibility, and user value may change sequencing.
 
-## Completed foundations
+## Completed capabilities
 
-### v0.1.0 — Foundation
+- **v0.1–v0.5:** acquisition, metadata, universal releases, streaming intelligence, release intelligence, and project constitution.
+- **v0.6.1–v0.6.5:** personalization, identity, persistence, personal calendars, watchlists, and framework-neutral Personal API.
+- **v0.7.0:** Experience Platform Foundation with dashboard, widget, event, plugin, and notification contracts.
 
-AniList ingestion, canonical package structure, ICS output, logging, tests, and continuous integration.
+## Experience Era priorities
 
-### v0.2.0 — Metadata Engine
+1. **Web dashboard** — vital primary experience.
+2. **Customizable desktop app** — native-feeling client with user-controlled widgets, layout, and theme.
+3. **Public API** — broad integration capability after the primary experiences are established.
 
-Rich title metadata, synopsis, genres, studios, artwork, trailers, season information, and calendar descriptions.
+## Next releases
 
-### v0.3.0 — Universal Release Generator
+### v0.7.1 — Web Dashboard MVP
 
-Episodes, movies, OVAs, ONAs, specials, TV shorts, music anime, mixed date precision, duplicate suppression, and multiple feeds.
+- Next.js and React application foundation;
+- Supabase authentication flow;
+- responsive application shell;
+- Today's Releases, Upcoming Releases, and Continue Watching widgets;
+- calendar and watchlist management entry points;
+- accessibility and error-state baseline.
 
-### v0.4.0 — Streaming Intelligence
+### v0.7.2 — Release Timeline
 
-Canonical streaming-provider records, provider normalization, evidence, confidence, curated knowledge, and provider-specific feeds.
+- day, week, and season scales;
+- premieres, finales, movies, dubs, delays, and provider changes;
+- local timezone display;
+- filtering and evidence details.
 
-### v0.5.0 — Release Intelligence Foundation
+### v0.7.3 — Dashboard Customization
 
-Confirmed, reported, estimated, and unknown dates; confidence; precision; version; lifecycle; evidence; and intelligence-specific feeds.
+- widget visibility, order, sizing, and saved layouts;
+- theme and density controls;
+- desktop-compatible layout contracts.
 
-### v0.5.1 — Project Constitution
+### v0.7.4 — Desktop Foundation
 
-Mission, foundation, governance, contributor standards, release process, brand voice, quality gates, and architecture decision records.
+- Tauri shell;
+- reusable web UI;
+- local preferences and secure credential storage;
+- desktop-specific capabilities and update strategy.
 
-## Next release
+### v0.7.5 — Notification Center
 
-### v0.6.0 — Accounts and Preferences
+- user-controlled rules;
+- notification inbox;
+- email, Discord, RSS, and webhook adapters.
 
-**Capability:** Answer “What do I care about?”
+### v0.8 — Intelligence Expansion
 
-Planned scope:
+- transparent recommendations;
+- release-change detection;
+- provider-change intelligence;
+- prediction foundations.
 
-- Supabase-backed authentication architecture;
-- email account creation, verification, sign-in, reset, and deletion;
-- user profiles and timezone preferences;
-- genre include/exclude rules;
-- release-type preferences;
-- preferred and hidden streaming providers;
-- saved, favorite, hidden, watching, and plan-to-watch anime states;
-- database migrations and Row-Level Security policies;
-- separation between public release data and private user data;
-- export and deletion foundations;
-- security documentation and tests.
+### v0.9 — Public API and Ecosystem
 
-Accounts will not require rewriting the generator. The account layer filters canonical releases produced by the existing engine.
+- documented HTTP API;
+- authentication, rate limits, and scopes;
+- integration and plugin developer documentation.
 
-## Planned releases
+### v1.0 — Public Launch
 
-### v0.7.0 — Personalized Calendar Feeds
-
-**Capability:** Deliver “My releases.”
-
-- revocable private feed tokens;
-- multiple named calendar profiles;
-- watchlist-only, genre, provider, format, sub, dub, and movie feeds;
-- secure dynamic ICS endpoints;
-- token rotation and audit-safe logging.
-
-### v0.8.0 — Personalized Dashboard
-
-**Capability:** Visualize what matters now.
-
-- upcoming personalized releases;
-- search and saved anime management;
-- calendar-profile management;
-- evidence and confidence presentation;
-- accessible, responsive interface.
-
-### v0.9.0 — Prediction and Notification Engines
-
-**Capability:** Explain what may happen next and notify responsibly.
-
-- transparent dub estimates;
-- theatrical-to-streaming lifecycle modeling;
-- schedule-delay detection;
-- email, Discord, RSS, and webhook outputs;
-- confidence thresholds and user-controlled notification rules.
-
-### v1.0.0 — Public Launch
-
-**Capability:** A stable, trustworthy public product.
-
-Quality bar:
-
-- stable deployment and migration process;
-- comprehensive automated testing;
-- privacy and security review;
-- user export and deletion flows;
-- complete user and contributor documentation;
-- accessibility review;
-- performance targets for large release datasets;
-- operational monitoring and incident guidance;
-- clear support and governance expectations.
-
-## Beyond v1.0
-
-Potential directions include AniList account sync, Sign in with Apple, mobile clients, public API access, recommendation and “Anime DNA” features, localization, regional theatrical tracking, Home Assistant integration, and community-maintained knowledge contributions.
-
-These are exploratory until promoted into a scheduled release.
-
-
-### v0.6.1 — Personalization Foundation — Complete
-
-- Immutable user-domain contracts
-- Explainable filtering and ranking
-- Persistence protocols
-- Public/private data boundary ADR
-
-### v0.6.2 — Identity and Persistence
-
-- Supabase project configuration
-- Authentication adapter
-- Database migrations
-- Row-level security policies
-- Account deletion and data export foundations
-
-### v0.6.3 — Preference Persistence
-
-- Saved genres, studios, providers, languages, release types, and favorites
-- Preference validation and migration strategy
-
-### v0.6.4 — Personal Calendar Engine
-
-- Tokenized private calendar subscriptions
-- Revocation and regeneration
-- User-specific ICS feeds
-
-### v0.6.5 (completed) — Watchlists and Personal API
-
-- Watchlist states
-- Stable personal API contracts
-- Dashboard and notification integration boundary
-
-
-## v0.6.2 — Identity and Persistence (complete)
-
-Supabase-ready authentication validation, RLS-backed persistence adapters, migrations, export, and application-data deletion.
-
-## Next: v0.6.3 — Personal Calendar Engine
-
-Generate secure, user-specific calendar feeds from canonical releases and private preferences.
-
-### v0.6.3 — Personal Calendar Engine ✅
-
-Secure calendar definitions, preference-driven ICS generation, and hashed private feed tokens.
-
-### v0.6.4 — Watchlists and Library — Complete
-
-Adds private saved-series records, watch states, progress tracking, and library-aware personalization.
+Stable deployment, migrations, security and privacy review, export/deletion, accessibility review, performance targets, operational monitoring, and complete user documentation.
