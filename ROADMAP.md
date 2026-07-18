@@ -138,3 +138,12 @@ These are exploratory until promoted into a scheduled release.
 - Watchlist states
 - Stable personal API contracts
 - Dashboard and notification integration boundary
+
+
+## v0.6.2 — Identity and Persistence (complete)
+
+Supabase-ready authentication validation, RLS-backed persistence adapters, migrations, export, and application-data deletion.
+
+## Next: v0.6.3 — Personal Calendar Engine
+
+Generate secure, user-specific calendar feeds from canonical releases and private preferences.

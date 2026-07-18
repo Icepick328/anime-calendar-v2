@@ -126,3 +126,8 @@ Public Release Intelligence + Private User Preferences
 ```
 
 External identity and persistence systems implement repository protocols at the adapter boundary. See ADR-0005 and `docs/PERSONALIZATION.md`.
+
+
+## Identity and persistence adapters
+
+The private domain depends on repository and authentication protocols. `integrations/supabase` implements those protocols through verified Auth tokens and PostgREST requests protected by Row-Level Security. Public release models never acquire account fields.

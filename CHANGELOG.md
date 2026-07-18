@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.6.2 - 2026-07-18
+
+### Added
+- Supabase-ready authentication and PostgREST adapters.
+- Versioned PostgreSQL migration with Row-Level Security.
+- Account export and application-data deletion contracts.
+- Identity/persistence security documentation and ADR-0006.
+- Adapter serialization, configuration, repository, and authentication tests.
+
+
 ## [0.6.1] - 2026-07-17
 
 ### Added

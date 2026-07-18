@@ -81,7 +81,7 @@ python -m ruff check .
 python -m pytest
 ```
 
-Expected result for v0.6.1:
+Expected result for v0.6.2:
 
 ```text
 14 passed
@@ -107,4 +107,9 @@ Expected result for v0.6.1:
 
 ## Personalization Foundation
 
-Version 0.6.1 introduces account-independent domain contracts and an explainable personalization engine. Public release data remains immutable; private preferences produce derived inclusion and ranking decisions. Authentication and hosted persistence are intentionally deferred to adapter-based milestones. See `docs/PERSONALIZATION.md`.
+Version 0.6.2 introduces account-independent domain contracts and an explainable personalization engine. Public release data remains immutable; private preferences produce derived inclusion and ranking decisions. Authentication and hosted persistence are intentionally deferred to adapter-based milestones. See `docs/PERSONALIZATION.md`.
+
+
+## Private identity and persistence
+
+v0.6.2 adds a Supabase-ready adapter layer, versioned SQL migrations, and Row-Level Security policies. The public generator remains fully usable without an account or Supabase configuration. See `docs/IDENTITY_AND_PERSISTENCE.md`.
