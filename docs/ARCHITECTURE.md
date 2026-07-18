@@ -1,5 +1,27 @@
 # Architecture
 
+> **Anime Calendar v2 is an open-source Anime Release Intelligence Platform dedicated to accuracy, transparency, personalization, and long-term maintainability.**
+
+## Architectural philosophy
+
+The project builds reusable engines around canonical models. Calendars are an output—not the core business model. Public release intelligence remains separate from private account data. Uncertainty, confidence, and evidence are preserved through every layer.
+
+```text
+Data Sources
+    ↓
+Metadata and Release Ingestion
+    ↓
+Canonical Anime and Release Models
+    ↓
+Streaming Intelligence + Release Intelligence
+    ↓
+Filtering and Personalization
+    ↓
+Output Plugins: ICS, dashboard, API, notifications
+```
+
+Major architectural choices are documented in `docs/adr/`. Governance and quality gates are defined in `PROJECT_CHARTER.md` and `RELEASE_PROCESS.md`.
+
 ## Pipeline
 
 ```text

@@ -2,7 +2,7 @@
 
 Anime Calendar v2 is a streaming-aware anime release intelligence engine. It combines AniList episode schedules and media start dates into Apple Calendar-compatible feeds for episodes, movies, OVAs, ONAs, specials, TV shorts, and music anime.
 
-Version **0.5.0** adds Release Intelligence: explicit date status, confidence, precision, version, lifecycle, and evidence. The generator distinguishes confirmed episode timestamps from reported movie and special dates instead of presenting every upstream date with the same certainty.
+Version **0.5.1** establishes the Project Constitution while preserving the v0.5.0 Release Intelligence engine: explicit date status, confidence, precision, version, lifecycle, and evidence. The generator distinguishes confirmed episode timestamps from reported movie and special dates instead of presenting every upstream date with the same certainty.
 
 ## Generated calendars
 
@@ -81,7 +81,7 @@ python -m ruff check .
 python -m pytest
 ```
 
-Expected result for v0.5.0:
+Expected result for v0.5.1:
 
 ```text
 14 passed
@@ -89,7 +89,15 @@ Expected result for v0.5.0:
 
 ## Documentation
 
+- `FOUNDATION.md`
+- `MISSION.md`
+- `PROJECT_CHARTER.md`
+- `RELEASE_PROCESS.md`
+- `BRAND.md`
+- `CONTRIBUTING.md`
+- `CODE_OF_CONDUCT.md`
 - `docs/ARCHITECTURE.md`
+- `docs/adr/`
 - `docs/STREAMING_KNOWLEDGE.md`
 - `docs/RELEASE_INTELLIGENCE.md`
 - `ROADMAP.md`

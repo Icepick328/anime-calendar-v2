@@ -1,9 +1,9 @@
-# Windows Setup and v0.5.0 Upgrade
+# Windows Setup and v0.5.1 Upgrade
 
 ## Upgrade an existing repository
 
 1. Commit and push the current version.
-2. Extract the v0.5.0 snapshot.
+2. Extract the v0.5.1 snapshot.
 3. Copy everything inside the extracted folder into the repository root.
 4. Replace destination files when prompted.
 5. Do not delete `.git` or `.venv`.
@@ -36,6 +36,6 @@ Commit:
 ```powershell
 git status
 git add .
-git commit -m "v0.5.0: add release intelligence foundation"
+git commit -m "v0.5.1: add project constitution"
 git push
 ```

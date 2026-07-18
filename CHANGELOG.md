@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.5.1 — Project Constitution
+
+- Add project foundation and mission documents.
+- Add product values, scope boundaries, north star, and success criteria.
+- Add project charter and maintainer-led governance model.
+- Add formal release process and engineering, documentation, product, and operational quality gates.
+- Add contributor standards and architecture-change requirements.
+- Add project-specific code of conduct.
+- Add brand voice, canonical terminology, and uncertainty language.
+- Add Architecture Decision Record template and four initial accepted ADRs.
+- Expand architecture documentation with engine philosophy and public/private data separation.
+- Commit v0.6.0 accounts and preferences as the next planned capability.
+- Preserve the v0.5.0 runtime and fourteen-test baseline.
+
+
 ## 0.5.0 — Release Intelligence Foundation
 
 - Add confirmed, reported, estimated, and unknown date states.
