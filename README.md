@@ -123,3 +123,16 @@ v0.6.2 adds a Supabase-ready adapter layer, versioned SQL migrations, and Row-Le
 ## Personal calendars
 
 v0.6.3 adds preference-driven personal ICS generation and secure hashed feed credentials. See `docs/PERSONAL_CALENDARS.md`.
+
+
+## Web dashboard (v0.7.1)
+
+The first browser experience lives in `web/`. It opens in Demo Mode with curated sample data, so no Supabase account is required to evaluate the dashboard.
+
+```powershell
+cd web
+npm install
+npm run dev
+```
+
+Then open `http://localhost:3000`.

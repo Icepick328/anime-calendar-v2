@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.7.1
+
+- Added a Next.js 16 and React 19 web application.
+- Added a responsive dashboard shell and navigation.
+- Added a no-account Demo Mode using curated local sample data.
+- Added Today’s Releases, Continue Watching, Coming Up, and Timeline Preview widgets.
+- Added responsive and accessibility baselines.
+- Preserved the framework-neutral Experience Platform as the source of future contracts.
+
+
 ## v0.7.0 — Experience Platform Foundation
 
 ### Added

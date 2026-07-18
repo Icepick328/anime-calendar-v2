@@ -9,6 +9,7 @@ The roadmap communicates intent, not guarantees. Security, evidence, maintainabi
 - **v0.1–v0.5:** acquisition, metadata, universal releases, streaming intelligence, release intelligence, and project constitution.
 - **v0.6.1–v0.6.5:** personalization, identity, persistence, personal calendars, watchlists, and framework-neutral Personal API.
 - **v0.7.0:** Experience Platform Foundation with dashboard, widget, event, plugin, and notification contracts.
+- **v0.7.1:** Web Dashboard MVP with responsive Demo Mode, release widgets, and continue-watching experience.
 
 ## Experience Era priorities
 
@@ -18,14 +19,15 @@ The roadmap communicates intent, not guarantees. Security, evidence, maintainabi
 
 ## Next releases
 
-### v0.7.1 — Web Dashboard MVP
+### v0.7.1 — Web Dashboard MVP ✅
 
 - Next.js and React application foundation;
-- Supabase authentication flow;
-- responsive application shell;
-- Today's Releases, Upcoming Releases, and Continue Watching widgets;
-- calendar and watchlist management entry points;
-- accessibility and error-state baseline.
+- responsive Demo Mode dashboard shell;
+- Today's Releases, Upcoming Releases, Continue Watching, and Timeline preview widgets;
+- calendar and library navigation entry points;
+- accessibility and responsive-layout baseline.
+
+Authentication wiring is intentionally deferred until Supabase project credentials are configured.
 
 ### v0.7.2 — Release Timeline
 
