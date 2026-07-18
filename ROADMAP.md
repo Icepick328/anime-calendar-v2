@@ -151,3 +151,7 @@ Generate secure, user-specific calendar feeds from canonical releases and privat
 ### v0.6.3 — Personal Calendar Engine ✅
 
 Secure calendar definitions, preference-driven ICS generation, and hashed private feed tokens.
+
+### v0.6.4 — Watchlists and Library — Complete
+
+Adds private saved-series records, watch states, progress tracking, and library-aware personalization.

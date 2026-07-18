@@ -82,3 +82,12 @@
 - Personal calendar definitions and preference-driven ICS generation.
 - Hashed private feed credentials and Supabase persistence.
 - Personal calendar migration, RLS policies, documentation, ADR, and tests.
+
+## [0.6.4] - 2026-07-18
+
+### Added
+- Private watchlists and library entries.
+- Watching, planned, completed, on-hold, and dropped states.
+- Progress, score, and notes.
+- Library-aware personalization and calendar filtering.
+- Supabase repository, migration, RLS policies, tests, documentation, and ADR-0008.

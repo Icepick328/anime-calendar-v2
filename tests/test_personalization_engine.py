@@ -124,3 +124,53 @@ def test_engine_does_not_mutate_release() -> None:
     PersonalizationEngine().evaluate([release], UserPreferences())
 
     assert release.stable_key == original_key
+
+
+def test_watching_series_is_ranked_above_unlisted_series() -> None:
+    from anime_calendar.personalization.library import LibraryEntry, LibraryFilter, WatchStatus
+
+    watching = make_release(anilist_id=10)
+    unlisted = make_release(anilist_id=20)
+    library = LibraryEntry("user-1", 10, WatchStatus.WATCHING)
+
+    result = PersonalizationEngine().evaluate(
+        [unlisted, watching],
+        UserPreferences(),
+        library_entries=[library],
+        library_filter=LibraryFilter(),
+    )
+
+    assert result[0].release.anime.anilist_id == 10
+    assert DecisionReason.LIBRARY_WATCHING in result[0].decision.reasons
+
+
+def test_progress_hides_already_released_episode() -> None:
+    from anime_calendar.personalization.library import LibraryEntry, LibraryFilter, WatchStatus
+
+    release = make_release(anilist_id=10)
+    library = LibraryEntry("user-1", 10, WatchStatus.WATCHING, progress=1)
+
+    result = PersonalizationEngine().evaluate(
+        [release],
+        UserPreferences(),
+        library_entries=[library],
+        library_filter=LibraryFilter(hide_released_progress=True),
+    )
+
+    assert result == ()
+
+
+def test_library_status_filter_excludes_dropped_series() -> None:
+    from anime_calendar.personalization.library import LibraryEntry, LibraryFilter, WatchStatus
+
+    release = make_release(anilist_id=10)
+    library = LibraryEntry("user-1", 10, WatchStatus.DROPPED)
+
+    result = PersonalizationEngine().evaluate(
+        [release],
+        UserPreferences(),
+        library_entries=[library],
+        library_filter=LibraryFilter(included_statuses=frozenset({WatchStatus.WATCHING})),
+    )
+
+    assert result == ()

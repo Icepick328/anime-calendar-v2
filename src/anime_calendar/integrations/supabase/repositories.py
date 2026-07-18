@@ -145,3 +145,52 @@ class SupabasePersonalCalendarRepository(_UserScopedRepository):
             json={"presented_token_hash": token_hash},
         )
         return personal_calendar_from_row(rows[0]) if rows else None
+
+
+class SupabaseLibraryRepository(_UserScopedRepository):
+    def get_entry(self, owner_id: str, anilist_id: int):
+        from anime_calendar.integrations.supabase.serialization import library_entry_from_row
+
+        rows = self.client.request(
+            "GET",
+            "library_entries",
+            access_token=self.access_token,
+            params={
+                "owner_id": f"eq.{owner_id}",
+                "anilist_id": f"eq.{anilist_id}",
+                "select": "*",
+                "limit": "1",
+            },
+        )
+        return library_entry_from_row(rows[0]) if rows else None
+
+    def list_entries(self, owner_id: str):
+        from anime_calendar.integrations.supabase.serialization import library_entry_from_row
+
+        rows = self.client.request(
+            "GET",
+            "library_entries",
+            access_token=self.access_token,
+            params={"owner_id": f"eq.{owner_id}", "select": "*", "order": "updated_at.desc"},
+        )
+        return tuple(library_entry_from_row(row) for row in rows or [])
+
+    def save_entry(self, entry) -> None:
+        from anime_calendar.integrations.supabase.serialization import library_entry_to_row
+
+        self.client.request(
+            "POST",
+            "library_entries",
+            access_token=self.access_token,
+            json=library_entry_to_row(entry),
+            prefer="resolution=merge-duplicates,return=minimal",
+        )
+
+    def delete_entry(self, owner_id: str, anilist_id: int) -> None:
+        self.client.request(
+            "DELETE",
+            "library_entries",
+            access_token=self.access_token,
+            params={"owner_id": f"eq.{owner_id}", "anilist_id": f"eq.{anilist_id}"},
+            prefer="return=minimal",
+        )

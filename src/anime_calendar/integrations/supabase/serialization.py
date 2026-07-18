@@ -95,3 +95,29 @@ def personal_calendar_to_row(calendar) -> dict[str, object]:
         "visibility": calendar.visibility.value,
         "enabled": calendar.enabled,
     }
+
+
+def library_entry_from_row(row: dict[str, object]):
+    from anime_calendar.personalization.library import LibraryEntry, WatchStatus
+
+    return LibraryEntry(
+        owner_id=str(row["owner_id"]),
+        anilist_id=int(row["anilist_id"]),
+        status=WatchStatus(str(row["status"])),
+        progress=int(row.get("progress", 0)),
+        score=int(row["score"]) if row.get("score") is not None else None,
+        notes=str(row["notes"]) if row.get("notes") is not None else None,
+        created_at=datetime.fromisoformat(str(row["created_at"]).replace("Z", "+00:00")),
+        updated_at=datetime.fromisoformat(str(row["updated_at"]).replace("Z", "+00:00")),
+    )
+
+
+def library_entry_to_row(entry) -> dict[str, object]:
+    return {
+        "owner_id": entry.owner_id,
+        "anilist_id": entry.anilist_id,
+        "status": entry.status.value,
+        "progress": entry.progress,
+        "score": entry.score,
+        "notes": entry.notes,
+    }
