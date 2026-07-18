@@ -75,3 +75,10 @@
 ## 0.1.0 — Foundation
 
 - Add AniList ingestion, ICS generation, tests, logging, and CI.
+
+## [0.6.3] - 2026-07-18
+
+### Added
+- Personal calendar definitions and preference-driven ICS generation.
+- Hashed private feed credentials and Supabase persistence.
+- Personal calendar migration, RLS policies, documentation, ADR, and tests.

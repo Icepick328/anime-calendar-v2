@@ -90,3 +90,58 @@ class SupabaseAccountRepository(_UserScopedRepository):
             json={"requested_user_id": user_id},
             prefer="return=minimal",
         )
+
+
+class SupabasePersonalCalendarRepository(_UserScopedRepository):
+    def get_calendar(self, calendar_id: str):
+        from anime_calendar.integrations.supabase.serialization import personal_calendar_from_row
+
+        rows = self.client.request(
+            "GET",
+            "personal_calendars",
+            access_token=self.access_token,
+            params={"calendar_id": f"eq.{calendar_id}", "select": "*", "limit": "1"},
+        )
+        return personal_calendar_from_row(rows[0]) if rows else None
+
+    def list_calendars(self, owner_id: str):
+        from anime_calendar.integrations.supabase.serialization import personal_calendar_from_row
+
+        rows = self.client.request(
+            "GET",
+            "personal_calendars",
+            access_token=self.access_token,
+            params={"owner_id": f"eq.{owner_id}", "select": "*", "order": "created_at.asc"},
+        )
+        return tuple(personal_calendar_from_row(row) for row in rows or [])
+
+    def save_calendar(self, calendar) -> None:
+        from anime_calendar.integrations.supabase.serialization import personal_calendar_to_row
+
+        self.client.request(
+            "POST",
+            "personal_calendars",
+            access_token=self.access_token,
+            json=personal_calendar_to_row(calendar),
+            prefer="resolution=merge-duplicates,return=minimal",
+        )
+
+    def save_feed_token_hash(self, calendar_id: str, token_hash: str) -> None:
+        self.client.request(
+            "POST",
+            "personal_calendar_tokens",
+            access_token=self.access_token,
+            json={"calendar_id": calendar_id, "token_hash": token_hash},
+            prefer="resolution=merge-duplicates,return=minimal",
+        )
+
+    def resolve_calendar_by_token_hash(self, token_hash: str):
+        from anime_calendar.integrations.supabase.serialization import personal_calendar_from_row
+
+        rows = self.client.request(
+            "POST",
+            "rpc/resolve_personal_calendar",
+            access_token=self.access_token,
+            json={"presented_token_hash": token_hash},
+        )
+        return personal_calendar_from_row(rows[0]) if rows else None

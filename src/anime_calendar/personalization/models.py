@@ -78,6 +78,8 @@ class PersonalCalendar:
     name: str
     visibility: CalendarVisibility = CalendarVisibility.PRIVATE
     enabled: bool = True
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    updated_at: datetime = field(default_factory=lambda: datetime.now(UTC))
 
     def __post_init__(self) -> None:
         if not self.calendar_id.strip():
@@ -86,3 +88,5 @@ class PersonalCalendar:
             raise ValueError("owner_id must not be empty")
         if not self.name.strip():
             raise ValueError("name must not be empty")
+        if self.created_at.tzinfo is None or self.updated_at.tzinfo is None:
+            raise ValueError("calendar timestamps must be timezone-aware")

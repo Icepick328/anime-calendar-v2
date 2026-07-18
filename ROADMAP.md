@@ -147,3 +147,7 @@ Supabase-ready authentication validation, RLS-backed persistence adapters, migra
 ## Next: v0.6.3 — Personal Calendar Engine
 
 Generate secure, user-specific calendar feeds from canonical releases and private preferences.
+
+### v0.6.3 — Personal Calendar Engine ✅
+
+Secure calendar definitions, preference-driven ICS generation, and hashed private feed tokens.

@@ -71,3 +71,27 @@ def preferences_to_row(user_id: str, preferences: UserPreferences) -> dict[str, 
         "favorite_anilist_ids": sorted(preferences.favorite_anilist_ids),
         "include_unmatched_releases": preferences.include_unmatched_releases,
     }
+
+
+def personal_calendar_from_row(row: dict[str, object]):
+    from anime_calendar.personalization.models import CalendarVisibility, PersonalCalendar
+
+    return PersonalCalendar(
+        calendar_id=str(row["calendar_id"]),
+        owner_id=str(row["owner_id"]),
+        name=str(row["name"]),
+        visibility=CalendarVisibility(str(row.get("visibility", "private"))),
+        enabled=bool(row.get("enabled", True)),
+        created_at=datetime.fromisoformat(str(row["created_at"]).replace("Z", "+00:00")),
+        updated_at=datetime.fromisoformat(str(row["updated_at"]).replace("Z", "+00:00")),
+    )
+
+
+def personal_calendar_to_row(calendar) -> dict[str, object]:
+    return {
+        "calendar_id": calendar.calendar_id,
+        "owner_id": calendar.owner_id,
+        "name": calendar.name,
+        "visibility": calendar.visibility.value,
+        "enabled": calendar.enabled,
+    }

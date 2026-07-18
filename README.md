@@ -113,3 +113,7 @@ Version 0.6.2 introduces account-independent domain contracts and an explainable
 ## Private identity and persistence
 
 v0.6.2 adds a Supabase-ready adapter layer, versioned SQL migrations, and Row-Level Security policies. The public generator remains fully usable without an account or Supabase configuration. See `docs/IDENTITY_AND_PERSISTENCE.md`.
+
+## Personal calendars
+
+v0.6.3 adds preference-driven personal ICS generation and secure hashed feed credentials. See `docs/PERSONAL_CALENDARS.md`.
