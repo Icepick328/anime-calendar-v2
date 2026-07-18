@@ -133,7 +133,7 @@ These are exploratory until promoted into a scheduled release.
 - Revocation and regeneration
 - User-specific ICS feeds
 
-### v0.6.5 — Watchlists and Personal API
+### v0.6.5 (completed) — Watchlists and Personal API
 
 - Watchlist states
 - Stable personal API contracts

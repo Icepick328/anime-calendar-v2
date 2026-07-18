@@ -1,3 +1,11 @@
+## [0.6.5] - 2026-07-18
+
+### Added
+- Framework-neutral authenticated Personal API service.
+- Profile, preference, calendar, feed-token, library, export, deletion, and health use cases.
+- Explicit owner enforcement and nine application-service tests.
+- ADR-0009 and Personal API documentation.
+
 # Changelog
 
 ## 0.6.2 - 2026-07-18
