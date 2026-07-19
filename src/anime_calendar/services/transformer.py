@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import html
 import re
@@ -10,8 +10,6 @@ from anime_calendar.models import (
     Anime,
     ExternalLink,
     Release,
-    ReleaseConfidence,
-    ReleaseDateStatus,
     ReleaseEvidence,
     ReleaseEvidenceType,
     ReleasePrecision,
@@ -19,6 +17,7 @@ from anime_calendar.models import (
     ReleaseVariant,
     Trailer,
 )
+from anime_calendar.release_intelligence.confidence import assess_release_evidence
 from anime_calendar.services.streaming_resolver import resolve_streaming_providers
 
 _WHITESPACE = re.compile(r"\s+")
@@ -41,11 +40,15 @@ def _clean_text(value: str | None) -> str | None:
     return cleaned or None
 
 
-def _transform_external_links(raw_links: list[dict[str, Any]] | None) -> tuple[ExternalLink, ...]:
+def _transform_external_links(
+    raw_links: list[dict[str, Any]] | None,
+) -> tuple[ExternalLink, ...]:
     links: list[ExternalLink] = []
+
     for raw in raw_links or []:
         site = raw.get("site")
         url = raw.get("url")
+
         if site and url:
             links.append(
                 ExternalLink(
@@ -55,12 +58,14 @@ def _transform_external_links(raw_links: list[dict[str, Any]] | None) -> tuple[E
                     language=raw.get("language"),
                 )
             )
+
     return tuple(links)
 
 
 def _transform_trailer(raw: dict[str, Any] | None) -> Trailer | None:
     if not raw or not raw.get("site") or not raw.get("id"):
         return None
+
     return Trailer(
         site=str(raw["site"]),
         trailer_id=str(raw["id"]),
@@ -106,7 +111,9 @@ def _transform_anime(media: dict[str, Any]) -> Anime:
     )
 
 
-def transform_airing_schedule(raw_items: Iterable[dict[str, Any]]) -> list[Release]:
+def transform_airing_schedule(
+    raw_items: Iterable[dict[str, Any]],
+) -> list[Release]:
     releases: list[Release] = []
     seen: set[tuple[int, int, int]] = set()
 
@@ -115,76 +122,102 @@ def transform_airing_schedule(raw_items: Iterable[dict[str, Any]]) -> list[Relea
         anime_id = int(media["id"])
         episode_number = int(item["episode"])
         airing_timestamp = int(item["airingAt"])
+
         dedupe_key = (anime_id, episode_number, airing_timestamp)
         if dedupe_key in seen:
             continue
-        seen.add(dedupe_key)
 
+        seen.add(dedupe_key)
         anime = _transform_anime(media)
+
+        evidence = (
+            ReleaseEvidence(
+                evidence_type=ReleaseEvidenceType.ANILIST_AIRING_SCHEDULE,
+                source_name="AniList airing schedule",
+                source_url=anime.site_url,
+                note="Precise upstream airing timestamp.",
+            ),
+        )
+
+        assessment = assess_release_evidence(
+            evidence=evidence,
+            precision=ReleasePrecision.EXACT_TIME,
+        )
+
         releases.append(
             Release(
                 anime=anime,
                 release_type=ReleaseType.EPISODE,
                 episode_number=episode_number,
                 released_at=datetime.fromtimestamp(airing_timestamp, tz=UTC),
-                date_status=ReleaseDateStatus.CONFIRMED,
-                confidence=ReleaseConfidence.HIGH,
-                precision=ReleasePrecision.EXACT_TIME,
+                date_status=assessment.date_status,
+                confidence=assessment.confidence,
+                precision=assessment.precision,
                 variant=ReleaseVariant.ORIGINAL,
-                evidence=(
-                    ReleaseEvidence(
-                        evidence_type=ReleaseEvidenceType.ANILIST_AIRING_SCHEDULE,
-                        source_name="AniList airing schedule",
-                        source_url=anime.site_url,
-                        note="Precise upstream airing timestamp.",
-                    ),
-                ),
+                evidence=evidence,
             )
         )
 
     return sorted(releases, key=lambda release: release.released_at)
 
 
-def transform_media_releases(raw_items: Iterable[dict[str, Any]]) -> list[Release]:
+def transform_media_releases(
+    raw_items: Iterable[dict[str, Any]],
+) -> list[Release]:
     releases: list[Release] = []
     seen: set[tuple[int, ReleaseType, date]] = set()
 
     for media in raw_items:
         start = media.get("startDate") or {}
-        year, month, day = start.get("year"), start.get("month"), start.get("day")
+        year = start.get("year")
+        month = start.get("month")
+        day = start.get("day")
+
         if not all((year, month, day)):
             continue
 
         media_format = media.get("format")
-        release_type = _FORMAT_TO_RELEASE_TYPE.get(media_format, ReleaseType.OTHER)
+        release_type = _FORMAT_TO_RELEASE_TYPE.get(
+            media_format,
+            ReleaseType.OTHER,
+        )
         release_date = date(int(year), int(month), int(day))
         anime_id = int(media["id"])
+
         dedupe_key = (anime_id, release_type, release_date)
         if dedupe_key in seen:
             continue
-        seen.add(dedupe_key)
 
+        seen.add(dedupe_key)
         anime = _transform_anime(media)
+
+        evidence = (
+            ReleaseEvidence(
+                evidence_type=ReleaseEvidenceType.ANILIST_MEDIA_START_DATE,
+                source_name="AniList media start date",
+                source_url=anime.site_url,
+                note=(
+                    "Date-only upstream metadata; region and theatrical/"
+                    "streaming context may be unspecified."
+                ),
+            ),
+        )
+
+        assessment = assess_release_evidence(
+            evidence=evidence,
+            precision=ReleasePrecision.EXACT_DATE,
+        )
+
         releases.append(
             Release(
                 anime=anime,
                 release_type=release_type,
                 released_at=release_date,
-                date_status=ReleaseDateStatus.REPORTED,
-                confidence=ReleaseConfidence.MEDIUM,
-                precision=ReleasePrecision.EXACT_DATE,
+                date_status=assessment.date_status,
+                confidence=assessment.confidence,
+                precision=assessment.precision,
                 variant=ReleaseVariant.ORIGINAL,
-                evidence=(
-                    ReleaseEvidence(
-                        evidence_type=ReleaseEvidenceType.ANILIST_MEDIA_START_DATE,
-                        source_name="AniList media start date",
-                        source_url=anime.site_url,
-                        note=(
-                            "Date-only upstream metadata; region and theatrical/streaming context "
-                            "may be unspecified."
-                        ),
-                    ),
-                ),
+                evidence=evidence,
             )
         )
 
@@ -194,11 +227,23 @@ def transform_media_releases(raw_items: Iterable[dict[str, Any]]) -> list[Releas
 def _sort_value(release: Release) -> datetime:
     if isinstance(release.released_at, datetime):
         return release.released_at
-    return datetime.combine(release.released_at, datetime.min.time(), tzinfo=UTC)
+
+    return datetime.combine(
+        release.released_at,
+        datetime.min.time(),
+        tzinfo=UTC,
+    )
 
 
-def merge_releases(*release_groups: Iterable[Release]) -> list[Release]:
-    candidates = [release for group in release_groups for release in group]
+def merge_releases(
+    *release_groups: Iterable[Release],
+) -> list[Release]:
+    candidates = [
+        release
+        for group in release_groups
+        for release in group
+    ]
+
     episode_dates = {
         (release.anime.anilist_id, release.released_at.date())
         for release in candidates
@@ -207,14 +252,19 @@ def merge_releases(*release_groups: Iterable[Release]) -> list[Release]:
     }
 
     merged: dict[str, Release] = {}
+
     for release in candidates:
         if (
             release.release_type is not ReleaseType.EPISODE
             and isinstance(release.released_at, date)
-            and (release.anime.anilist_id, release.released_at) in episode_dates
+            and (release.anime.anilist_id, release.released_at)
+            in episode_dates
         ):
             continue
+
         existing = merged.get(release.stable_key)
+
         if existing is None or release.confidence.rank > existing.confidence.rank:
             merged[release.stable_key] = release
+
     return sorted(merged.values(), key=_sort_value)
