@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import html
 import re
@@ -34,6 +34,7 @@ _FORMAT_TO_RELEASE_TYPE = {
 def _clean_text(value: str | None) -> str | None:
     if not value:
         return None
+
     cleaned = html.unescape(value).replace("<br>", "\n").replace("<br />", "\n")
     cleaned = re.sub(r"<[^>]+>", "", cleaned)
     cleaned = _WHITESPACE.sub(" ", cleaned).strip()
@@ -182,6 +183,11 @@ def transform_media_releases(
             ReleaseType.OTHER,
         )
         release_date = date(int(year), int(month), int(day))
+        release_datetime = datetime.combine(
+            release_date,
+            datetime.min.time(),
+            tzinfo=UTC,
+        )
         anime_id = int(media["id"])
 
         dedupe_key = (anime_id, release_type, release_date)
@@ -212,7 +218,7 @@ def transform_media_releases(
             Release(
                 anime=anime,
                 release_type=release_type,
-                released_at=release_date,
+                released_at=release_datetime,
                 date_status=assessment.date_status,
                 confidence=assessment.confidence,
                 precision=assessment.precision,
@@ -226,6 +232,12 @@ def transform_media_releases(
 
 def _sort_value(release: Release) -> datetime:
     if isinstance(release.released_at, datetime):
+        if (
+            release.released_at.tzinfo is None
+            or release.released_at.utcoffset() is None
+        ):
+            return release.released_at.replace(tzinfo=UTC)
+
         return release.released_at
 
     return datetime.combine(
@@ -254,11 +266,15 @@ def merge_releases(
     merged: dict[str, Release] = {}
 
     for release in candidates:
+        release_date = (
+            release.released_at.date()
+            if isinstance(release.released_at, datetime)
+            else release.released_at
+        )
+
         if (
             release.release_type is not ReleaseType.EPISODE
-            and isinstance(release.released_at, date)
-            and (release.anime.anilist_id, release.released_at)
-            in episode_dates
+            and (release.anime.anilist_id, release_date) in episode_dates
         ):
             continue
 

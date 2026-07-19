@@ -73,7 +73,7 @@ def test_transform_media_releases_creates_all_day_movie_and_skips_partial_dates(
 
     assert len(releases) == 1
     assert releases[0].release_type is ReleaseType.MOVIE
-    assert releases[0].released_at == date(2026, 8, 14)
+    assert releases[0].released_at == datetime(2026, 8, 14, tzinfo=UTC)
     assert releases[0].is_all_day
     assert releases[0].date_status is ReleaseDateStatus.REPORTED
     assert releases[0].confidence is ReleaseConfidence.MEDIUM

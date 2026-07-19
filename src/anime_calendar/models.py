@@ -228,7 +228,13 @@ class Release:
 
     @property
     def is_all_day(self) -> bool:
-        return isinstance(self.released_at, date) and not isinstance(self.released_at, datetime)
+        return (
+            self.precision is ReleasePrecision.EXACT_DATE
+            or (
+                isinstance(self.released_at, date)
+                and not isinstance(self.released_at, datetime)
+            )
+        )
 
     @property
     def stable_key(self) -> str:
