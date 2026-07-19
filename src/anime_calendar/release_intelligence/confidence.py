@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from dataclasses import dataclass
 
@@ -8,6 +8,9 @@ from anime_calendar.models import (
     ReleaseEvidence,
     ReleaseEvidenceType,
     ReleasePrecision,
+)
+from anime_calendar.release_intelligence.rules import (
+    evaluate_scoring_rules,
 )
 
 
@@ -25,40 +28,14 @@ def assess_release_evidence(
     precision: ReleasePrecision,
 ) -> ReleaseAssessment:
     evidence_types = {item.evidence_type for item in evidence}
-    reasons: list[str] = []
-    score = 0
 
-    if ReleaseEvidenceType.OFFICIAL_ANNOUNCEMENT in evidence_types:
-        score += 50
-        reasons.append("Supported by an official announcement.")
+    scoring_result = evaluate_scoring_rules(
+        evidence_types=evidence_types,
+        precision=precision,
+    )
 
-    if ReleaseEvidenceType.ANILIST_AIRING_SCHEDULE in evidence_types:
-        score += 40
-        reasons.append("AniList supplied a precise airing-schedule entry.")
-
-    if ReleaseEvidenceType.CURATED_KNOWLEDGE in evidence_types:
-        score += 30
-        reasons.append("Supported by curated streaming knowledge.")
-
-    if ReleaseEvidenceType.ANILIST_MEDIA_START_DATE in evidence_types:
-        score += 25
-        reasons.append("AniList supplied a media start date.")
-
-    if ReleaseEvidenceType.HISTORICAL_PATTERN in evidence_types:
-        score += 10
-        reasons.append("Date is inferred from a historical release pattern.")
-
-    if precision is ReleasePrecision.EXACT_TIME:
-        score += 25
-        reasons.append("Release includes an exact time.")
-    elif precision is ReleasePrecision.EXACT_DATE:
-        score += 15
-        reasons.append("Release includes an exact calendar date.")
-    elif precision is ReleasePrecision.PARTIAL_DATE:
-        score += 5
-        reasons.append("Only a partial release date is available.")
-
-    score = min(score, 100)
+    score = scoring_result.score
+    reasons = scoring_result.reasons
 
     if score >= 90:
         confidence = ReleaseConfidence.VERIFIED
@@ -78,7 +55,10 @@ def assess_release_evidence(
         date_status = ReleaseDateStatus.CONFIRMED
     elif (
         ReleaseEvidenceType.OFFICIAL_ANNOUNCEMENT in evidence_types
-        and precision in {ReleasePrecision.EXACT_TIME, ReleasePrecision.EXACT_DATE}
+        and precision in {
+            ReleasePrecision.EXACT_TIME,
+            ReleasePrecision.EXACT_DATE,
+        }
     ):
         date_status = ReleaseDateStatus.CONFIRMED
     elif ReleaseEvidenceType.HISTORICAL_PATTERN in evidence_types:
@@ -93,5 +73,5 @@ def assess_release_evidence(
         confidence=confidence,
         precision=precision,
         score=score,
-        reasons=tuple(reasons),
+        reasons=reasons,
     )
