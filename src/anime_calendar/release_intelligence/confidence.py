@@ -21,6 +21,7 @@ class ReleaseAssessment:
     precision: ReleasePrecision
     score: int
     reasons: tuple[str, ...]
+    fired_rules: tuple[str, ...]
 
 
 def assess_release_evidence(
@@ -35,7 +36,6 @@ def assess_release_evidence(
     )
 
     score = scoring_result.score
-    reasons = scoring_result.reasons
 
     if score >= 90:
         confidence = ReleaseConfidence.VERIFIED
@@ -73,5 +73,6 @@ def assess_release_evidence(
         confidence=confidence,
         precision=precision,
         score=score,
-        reasons=reasons,
+        reasons=scoring_result.reasons,
+        fired_rules=scoring_result.fired_rules,
     )

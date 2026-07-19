@@ -13,6 +13,7 @@ from anime_calendar.models import (
 class RuleResult:
     score: int
     reasons: tuple[str, ...]
+    fired_rules: tuple[str, ...]
 
 
 class ScoringRule(Protocol):
@@ -41,11 +42,16 @@ class EvidenceScoringRule:
         del precision
 
         if self.evidence_type not in evidence_types:
-            return RuleResult(score=0, reasons=())
+            return RuleResult(
+                score=0,
+                reasons=(),
+                fired_rules=(),
+            )
 
         return RuleResult(
             score=self.score,
             reasons=(self.reason,),
+            fired_rules=(self.name,),
         )
 
 
@@ -64,11 +70,16 @@ class PrecisionScoringRule:
         del evidence_types
 
         if precision is not self.precision:
-            return RuleResult(score=0, reasons=())
+            return RuleResult(
+                score=0,
+                reasons=(),
+                fired_rules=(),
+            )
 
         return RuleResult(
             score=self.score,
             reasons=(self.reason,),
+            fired_rules=(self.name,),
         )
 
 
@@ -148,6 +159,7 @@ def evaluate_scoring_rules(
 ) -> RuleResult:
     score = 0
     reasons: list[str] = []
+    fired_rules: list[str] = []
 
     for rule in rules:
         result = rule.evaluate(
@@ -156,8 +168,10 @@ def evaluate_scoring_rules(
         )
         score += result.score
         reasons.extend(result.reasons)
+        fired_rules.extend(result.fired_rules)
 
     return RuleResult(
         score=min(score, 100),
         reasons=tuple(reasons),
+        fired_rules=tuple(fired_rules),
     )

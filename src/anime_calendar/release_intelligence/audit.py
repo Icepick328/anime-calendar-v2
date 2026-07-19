@@ -23,6 +23,7 @@ class ReleaseAudit:
     variant: str
     score: int
     reasons: tuple[str, ...]
+    fired_rules: tuple[str, ...]
     evidence_sources: tuple[str, ...]
     evidence_types: tuple[str, ...]
     streaming_providers: tuple[str, ...]
@@ -47,6 +48,7 @@ def audit_release(release: Release) -> ReleaseAudit:
         variant=release.variant.value,
         score=assessment.score,
         reasons=assessment.reasons,
+        fired_rules=assessment.fired_rules,
         evidence_sources=tuple(
             item.source_name
             for item in release.evidence
@@ -67,12 +69,16 @@ def format_release_audit(audit: ReleaseAudit) -> str:
     if audit.episode_number is not None:
         release_name = f"{release_name} - Episode {audit.episode_number}"
 
-    released_at = audit.released_at.isoformat()
-
     reasons = (
         "\n".join(f"  - {reason}" for reason in audit.reasons)
         if audit.reasons
         else "  - No assessment reasons available."
+    )
+
+    fired_rules = (
+        "\n".join(f"  + {rule_name}" for rule_name in audit.fired_rules)
+        if audit.fired_rules
+        else "  - No scoring rules fired."
     )
 
     evidence = (
@@ -100,7 +106,7 @@ def format_release_audit(audit: ReleaseAudit) -> str:
             "=" * len(release_name),
             f"Stable key: {audit.stable_key}",
             f"Release type: {audit.release_type}",
-            f"Release date: {released_at}",
+            f"Release date: {audit.released_at.isoformat()}",
             f"Date status: {audit.date_status}",
             f"Confidence: {audit.confidence}",
             f"Confidence score: {audit.score}/100",
@@ -108,6 +114,9 @@ def format_release_audit(audit: ReleaseAudit) -> str:
             f"Lifecycle: {audit.lifecycle}",
             f"Variant: {audit.variant}",
             f"Streaming providers: {providers}",
+            "",
+            "Rules fired:",
+            fired_rules,
             "",
             "Reasons:",
             reasons,
