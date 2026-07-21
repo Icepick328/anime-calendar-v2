@@ -8,6 +8,8 @@ from dataclasses import dataclass
 from enum import IntEnum
 
 from anime_calendar.config import load_settings
+from anime_calendar.diagnostics.quality import build_quality_report
+from anime_calendar.diagnostics.report import format_quality_report
 from anime_calendar.logging_config import configure_logging
 from anime_calendar.models import Release
 from anime_calendar.providers.anilist import AniListError
@@ -333,6 +335,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         LOGGER.info("Fetching live releases for diagnostics")
         releases = load_live_releases(load_settings())
         report = diagnose_releases(releases)
+        quality_report = build_quality_report(releases, report.findings)
+        print(format_quality_report(quality_report))
+        print()
         print(
             format_diagnostic_report(
                 report,
