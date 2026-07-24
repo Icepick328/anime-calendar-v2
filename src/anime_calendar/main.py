@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import sys
 from pathlib import Path
 
 from anime_calendar.calendars.ics_builder import build_calendar, write_calendar
@@ -37,7 +38,10 @@ def _write_feed(
     return write_calendar(calendar, output_directory / filename)
 
 
-def _provider_releases(releases: list[Release], provider_id: str) -> list[Release]:
+def _provider_releases(
+    releases: list[Release],
+    provider_id: str,
+) -> list[Release]:
     return [
         release
         for release in releases
@@ -53,14 +57,28 @@ def main() -> int:
 
     try:
         settings = load_settings()
+
         LOGGER.info("Fetching episode schedules from AniList")
-        episode_releases = transform_airing_schedule(fetch_airing_schedule(settings))
+        episode_releases = transform_airing_schedule(
+            fetch_airing_schedule(settings)
+        )
 
         LOGGER.info("Fetching movie and special releases from AniList")
-        media_releases = transform_media_releases(fetch_media_releases(settings))
-        all_releases = merge_releases(episode_releases, media_releases)
+        media_releases = transform_media_releases(
+            fetch_media_releases(settings)
+        )
 
-        movies = [item for item in all_releases if item.release_type is ReleaseType.MOVIE]
+        all_releases = merge_releases(
+            episode_releases,
+            media_releases,
+        )
+
+        movies = [
+            item
+            for item in all_releases
+            if item.release_type is ReleaseType.MOVIE
+        ]
+
         specials = [
             item
             for item in all_releases
@@ -74,41 +92,101 @@ def main() -> int:
                 ReleaseType.OTHER,
             }
         ]
+
         streaming_confirmed = [
-            item for item in all_releases if item.anime.streaming_providers
+            item
+            for item in all_releases
+            if item.anime.streaming_providers
         ]
+
         confirmed_dates = [
             item
             for item in all_releases
             if item.date_status is ReleaseDateStatus.CONFIRMED
         ]
+
         reported_dates = [
             item
             for item in all_releases
             if item.date_status is ReleaseDateStatus.REPORTED
         ]
+
         estimated_dates = [
             item
             for item in all_releases
             if item.date_status is ReleaseDateStatus.ESTIMATED
         ]
-        crunchyroll = _provider_releases(all_releases, "crunchyroll")
-        hidive = _provider_releases(all_releases, "hidive")
+
+        crunchyroll = _provider_releases(
+            all_releases,
+            "crunchyroll",
+        )
+
+        hidive = _provider_releases(
+            all_releases,
+            "hidive",
+        )
 
         output_directory = Path(settings.output_directory)
+
         feeds = (
-            (all_releases, settings.calendar_name, "anime_calendar.ics"),
-            (all_releases, settings.calendar_name, "all_releases.ics"),
-            (episode_releases, "Anime Episodes", "episodes.ics"),
-            (movies, "Anime Movies", "movies.ics"),
-            (specials, "Anime OVAs, ONAs & Specials", "specials.ics"),
-            (streaming_confirmed, "Anime with Confirmed Streaming", "streaming_confirmed.ics"),
-            (crunchyroll, "Anime on Crunchyroll", "crunchyroll.ics"),
-            (hidive, "Anime on HIDIVE", "hidive.ics"),
-            (confirmed_dates, "Confirmed Anime Release Dates", "confirmed_releases.ics"),
-            (reported_dates, "Reported Anime Release Dates", "reported_releases.ics"),
-            (estimated_dates, "Estimated Anime Release Dates", "estimated_releases.ics"),
+            (
+                all_releases,
+                settings.calendar_name,
+                "anime_calendar.ics",
+            ),
+            (
+                all_releases,
+                settings.calendar_name,
+                "all_releases.ics",
+            ),
+            (
+                episode_releases,
+                "Anime Episodes",
+                "episodes.ics",
+            ),
+            (
+                movies,
+                "Anime Movies",
+                "movies.ics",
+            ),
+            (
+                specials,
+                "Anime OVAs, ONAs & Specials",
+                "specials.ics",
+            ),
+            (
+                streaming_confirmed,
+                "Anime with Confirmed Streaming",
+                "streaming_confirmed.ics",
+            ),
+            (
+                crunchyroll,
+                "Anime on Crunchyroll",
+                "crunchyroll.ics",
+            ),
+            (
+                hidive,
+                "Anime on HIDIVE",
+                "hidive.ics",
+            ),
+            (
+                confirmed_dates,
+                "Confirmed Anime Release Dates",
+                "confirmed_releases.ics",
+            ),
+            (
+                reported_dates,
+                "Reported Anime Release Dates",
+                "reported_releases.ics",
+            ),
+            (
+                estimated_dates,
+                "Estimated Anime Release Dates",
+                "estimated_releases.ics",
+            ),
         )
+
         for releases, name, filename in feeds:
             path = _write_feed(
                 releases,
@@ -117,9 +195,22 @@ def main() -> int:
                 output_directory=output_directory,
                 duration=settings.event_duration_minutes,
             )
-            LOGGER.info("Generated %s events in %s", len(releases), path.resolve())
+
+            LOGGER.info(
+                "Generated %s events in %s",
+                len(releases),
+                path.resolve(),
+            )
+
     except (AniListError, OSError, TypeError, ValueError) as exc:
-        LOGGER.error("Calendar generation failed: %s", exc)
+        LOGGER.exception(
+            "Calendar generation failed: %s",
+            exc,
+        )
         return 1
 
     return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
