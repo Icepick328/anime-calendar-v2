@@ -1,10 +1,14 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
 from icalendar import Calendar, Event
 
+from anime_calendar.formatting.event_formatter import (
+    format_event_description,
+    format_event_summary,
+)
 from anime_calendar.models import (
     Release,
     ReleaseEvidence,
@@ -32,12 +36,12 @@ def _release_name(release: Release) -> str:
 
 def _summary(release: Release) -> str:
     prefix = "[Estimated] " if release.is_estimated else ""
-    return f"{prefix}{release.anime.title} — {_release_name(release)}"
+    return f"{prefix}{format_event_summary(release)}"
 
 
 def _provider_lines(provider: StreamingProvider) -> list[str]:
     confidence = provider.confidence.value.title()
-    lines = [f"{provider.display_name} — {confidence}"]
+    lines = [f"{provider.display_name} â€” {confidence}"]
     if provider.url:
         lines.append(provider.url)
     if provider.regions:
@@ -60,75 +64,7 @@ def _evidence_lines(evidence: ReleaseEvidence) -> list[str]:
 
 
 def _description(release: Release) -> str:
-    anime = release.anime
-    lines = [
-        f"Release type: {_humanize(release.release_type.value)}",
-        f"Release: {_release_name(release)}",
-        "",
-        "Release Intelligence",
-        f"Date status: {_humanize(release.date_status.value)}",
-        f"Confidence: {_humanize(release.confidence.value)}",
-        f"Lifecycle: {_humanize(release.effective_lifecycle.value)}",
-        f"Date precision: {_humanize(release.precision.value)}",
-        f"Version: {_humanize(release.variant.value)}",
-    ]
-    if release.episode_number is not None:
-        lines.insert(0, f"Episode: {release.episode_number}")
-    if release.evidence:
-        lines.extend(["", "Evidence"])
-        for evidence in release.evidence:
-            lines.extend(_evidence_lines(evidence))
-
-    lines.append("")
-    if anime.romaji_title != anime.title:
-        lines.append(f"Romaji title: {anime.romaji_title}")
-    if anime.native_title:
-        lines.append(f"Native title: {anime.native_title}")
-    if anime.season_label:
-        lines.append(f"Season: {anime.season_label}")
-    if anime.media_format:
-        lines.append(f"Format: {_humanize(anime.media_format)}")
-    if anime.status:
-        lines.append(f"Status: {_humanize(anime.status)}")
-    if anime.source:
-        lines.append(f"Source: {_humanize(anime.source)}")
-    if anime.total_episodes:
-        lines.append(f"Series episodes: {anime.total_episodes}")
-    if anime.duration_minutes:
-        unit = "movie" if release.release_type is ReleaseType.MOVIE else "episode"
-        lines.append(f"Typical {unit} duration: {anime.duration_minutes} minutes")
-    if anime.average_score:
-        lines.append(f"AniList score: {anime.average_score}/100")
-    if anime.genres:
-        lines.append(f"Genres: {', '.join(anime.genres)}")
-    if anime.studios:
-        lines.append(f"Studios: {', '.join(anime.studios)}")
-
-    if anime.streaming_providers:
-        lines.extend(["", "Streaming"])
-        for index, provider in enumerate(anime.streaming_providers):
-            if index:
-                lines.append("")
-            lines.extend(_provider_lines(provider))
-    else:
-        lines.extend(["", "Streaming", "No confirmed streaming provider found."])
-
-    if anime.synopsis:
-        lines.extend(["", "Synopsis", anime.synopsis])
-
-    lines.extend(["", "Links", f"AniList: {anime.site_url}"])
-    if anime.cover_image_url:
-        lines.append(f"Poster: {anime.cover_image_url}")
-    if anime.banner_image_url:
-        lines.append(f"Banner: {anime.banner_image_url}")
-    if anime.trailer and anime.trailer.url:
-        lines.append(f"Trailer: {anime.trailer.url}")
-
-    provider_urls = {provider.url for provider in anime.streaming_providers if provider.url}
-    for link in anime.external_links:
-        if link.url not in provider_urls:
-            lines.append(f"{link.site}: {link.url}")
-    return "\n".join(lines)
+    return format_event_description(release)
 
 
 def build_calendar(
@@ -194,3 +130,6 @@ def write_calendar(calendar: Calendar, output_path: str | Path) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(calendar.to_ical())
     return path
+
+
+
